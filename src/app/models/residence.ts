@@ -19,9 +19,9 @@ export interface Residence {
 }
 
 export interface ResidenceSearch{
-    city?:                  string;
-    country?:               string;
-    neighborhood?:          string;
+    city?:                  string | null;
+    country?:               string | null;
+    neighborhood?:          string | null;
     from?:                  string;
     to?:                    string;
     numOfPeople?:           number;

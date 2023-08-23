@@ -1,8 +1,10 @@
 import {AppBar, Box, List, ListItem, Switch, Toolbar} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {NavLink} from "react-router-dom";
-import {useAppSelector} from "../../store/configureStore";
+import {useAppDispatch, useAppSelector} from "../../store/configureStore";
 import SignedInMenu from "./SignedInMenu";
+import {resetResidenceParams, residencesSelectors} from "../../features/catalog/catalogSlice";
+import {useSelector} from "react-redux";
 
 const midLinks= [
     {title:'catalog', path:'/catalog'},
@@ -23,6 +25,9 @@ interface Props{
 
 export default function Header({darkMode,handleThemeChange}: Props){
     const {user} = useAppSelector(state => state.account);
+    const dispatch = useAppDispatch();
+    const {residenceParams} = useAppSelector(state => state.catalog );
+
 
     return(
         <AppBar position='static' sx={{mb:4}}>
@@ -31,6 +36,7 @@ export default function Header({darkMode,handleThemeChange}: Props){
                     <Typography variant = 'h6' component={NavLink}
                                 to='/'
                                 sx={{color:'inherit', textDecoration:'none'}}
+                                onClick={ event => dispatch(resetResidenceParams())}
                     >
                         RE-STORE
                     </Typography>

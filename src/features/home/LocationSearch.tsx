@@ -11,10 +11,11 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import { DatePicker } from "@mui/x-date-pickers";
 import SearchIcon from '@mui/icons-material/Search';
-import {catalogSlice, setFromDate, setResidenceParams} from "../catalog/catalogSlice";
+import {catalogSlice, setFromDate, setResidenceParams, setResidencesLoaded} from "../catalog/catalogSlice";
 import {useAppDispatch, useAppSelector} from "../../store/configureStore";
 import TextField from "@mui/material/TextField";
 import {MenuItem} from "@mui/material";
+import {NavLink} from "react-router-dom";
 
 const LocationSearch = () => {
     const { residenceParams } = useAppSelector(state => state.catalog);
@@ -29,7 +30,7 @@ const LocationSearch = () => {
         for (let i = 1; i <= 10; i++) {
             options.push(
                 <MenuItem key={i} value={i}>
-                    {i} {i === 1 ? 'Guest' : 'Guests'}
+                    {i}
                 </MenuItem>
             );
         }
@@ -66,9 +67,9 @@ const LocationSearch = () => {
 
             {/* Country */}
             <TextField id="standard-basic"
-                       label="City"
+                       label="Country"
                        variant="standard"
-                       onChange={event=>dispatch(setResidenceParams({city : event.target.value}))}
+                       onChange={event=>dispatch(setResidenceParams({country : event.target.value}))}
             />
             {/* From */}
             <Divider orientation="vertical" flexItem />
@@ -82,28 +83,30 @@ const LocationSearch = () => {
             <Divider orientation="vertical" flexItem />
             <DatePicker label="Holidays Ending On"
                 format="DD/MM/YYYY"
-                onChange={(newDate) => dispatch(setResidenceParams({ from: newDate }))}
+                onChange={(newDate) => dispatch(setResidenceParams({ to: newDate }))}
             />
 
             {/* Add guests */}
             <Divider orientation="vertical" flexItem />
-            <FormControl>
-                <InputLabel>Guests</InputLabel>
+            <FormControl sx={{ minWidth: 120 }}>
+                <InputLabel sx={{ marginTop: '8px' }}>Guests</InputLabel>
                 <Select
                     value={guests}
-                    onChange={handleChange}
+                    onChange={event => dispatch(setResidenceParams({numOfPeople : event.target.value}))}
                 >
                     {generateGuestOptions()}
                 </Select>
             </FormControl>
             <Divider orientation="vertical" flexItem />
-            <Button
-                variant="contained"
-                color="primary"
-                startIcon={<SearchIcon />}
-            >
-                Search
-            </Button>
+            <NavLink to={'/catalog'} >
+                <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SearchIcon />}
+                >
+                    Search
+                </Button>
+            </NavLink>
         </Paper>
     );
 };

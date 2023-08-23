@@ -50,6 +50,9 @@ function initParams(): ResidenceSearch{
     return{
         // from: null,
         // to:null,
+        city: null,
+        country: null,
+        neighborhood: null,
         pageSize : 3,
         pageNumber : 1
     }
@@ -63,18 +66,22 @@ export const catalogSlice = createSlice({
         residenceParams: initParams()
     }),
     reducers: {
-        setResidenceParamsLoaded: (state, action) => {
+        setResidenceParams: (state, action) => {
             state.residencesLoaded = false;
             state.residenceParams = {...state.residenceParams, ...action.payload};
         },
-        setResidenceParams: (state, action) => {
+        setResidenceParamsNoState: (state, action) => {
             // state.residencesLoaded = false;
             state.residenceParams = {...state.residenceParams, ...action.payload};
+        },
+        setResidencesLoaded:(state) =>{
+            state.residencesLoaded = false;
         },
         setFromDate: (state, action) => {
             state.residenceParams.from = action.payload;
         },
         resetResidenceParams: (state) => {
+            state.residencesLoaded = false;
             state.residenceParams = initParams()
         }
     },
@@ -105,4 +112,4 @@ export const catalogSlice = createSlice({
 
 export const residencesSelectors = residencesAdapter.getSelectors((state: RootState) => state.catalog);
 
-export const {setResidenceParams, resetResidenceParams,setFromDate} = catalogSlice.actions;
+export const {setResidenceParams, resetResidenceParams,setFromDate,setResidencesLoaded} = catalogSlice.actions;
