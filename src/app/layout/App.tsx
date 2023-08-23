@@ -1,11 +1,13 @@
 import {useCallback, useEffect, useState} from "react";
 import {Container, createTheme, CssBaseline, ThemeProvider} from "@mui/material";
 import Header from "./Header";
-import Catalog from "../../features/catalog/Catalog";
 import {Outlet} from "react-router-dom";
 import {useAppDispatch} from "../../store/configureStore";
 import {fetchCurrentUser} from "../../features/account/accountSlice";
-
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css'
+import {LocalizationProvider} from "@mui/x-date-pickers";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 
 
 function App() {
@@ -37,13 +39,17 @@ function App() {
     }
 
     return (
-    <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Header darkMode={darkMode} handleThemeChange={handleThemeChange}/>
-        <Container>
-            <Outlet/>
-        </Container>
-    </ThemeProvider>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <ThemeProvider theme={theme}>
+            <ToastContainer position="bottom-right" hideProgressBar theme="colored" />
+            <CssBaseline />
+            <Header darkMode={darkMode} handleThemeChange={handleThemeChange}/>
+            <Container>
+                <Outlet/>
+            </Container>
+        </ThemeProvider>
+    </LocalizationProvider>
+
   );
 }
 

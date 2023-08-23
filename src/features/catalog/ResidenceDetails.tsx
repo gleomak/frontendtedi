@@ -1,26 +1,21 @@
 import Typography from "@mui/material/Typography";
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
-import axios from "axios";
-import {Residence} from "../../app/models/residence";
 import {Grid} from "@mui/material";
-import agent from "../../app/api/agent";
+import {useAppDispatch, useAppSelector} from "../../store/configureStore";
+import {fResidenceAsync, residencesSelectors} from "./catalogSlice";
 
 
 export default function ResidenceDetails(){
+    const dispatch = useAppDispatch();
     const{id} = useParams<{id: string}>();
-    const [residence, setResidence] = useState<Residence | null>(null);
-    const [loading, setLoading] = useState(true);
-
+    const residence  = useAppSelector(state => residencesSelectors.selectById(state,id!));
+    const {status: residenceStatus} = useAppSelector(state => state.catalog);
     useEffect(() =>{
-        id && agent.Catalog.details(parseInt(id))
-        // axios.get(`http://localhost:5000/api/Residences/${id}`)
-            .then(response => setResidence(response))
-            .catch(error => console.log(error))
-            .finally(() => setLoading(false));
-    }, [id])
+        if(!residence) dispatch(fResidenceAsync(parseInt(id!)));
+    }, [id, dispatch, residence])
 
-    if(loading) return <h3>Loading...</h3>
+    if(residenceStatus.includes('pending')) return <h3>Loading...</h3>
     if(!residence) return <h3>Product not found</h3>
 
     return(

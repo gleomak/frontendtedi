@@ -19,7 +19,7 @@ export default function ResidenceCard({residence}:Prop){
                     {residence.residenceType}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    {residence.description}
+                    {residence.city}
                 </Typography>
             </CardContent>
             <CardActions>

@@ -1,5 +1,9 @@
 export interface Residence {
     id:                    number;
+    neighborhood:          string;
+    city:                  string;
+    country:               string;
+    residenceCapacity:     string;
     numOfBeds:             number;
     numOfBathrooms:        number;
     residenceType:         string;
@@ -12,4 +16,15 @@ export interface Residence {
     events:                boolean;
     minDaysForReservation: number;
     imageURL:              string;
+}
+
+export interface ResidenceSearch{
+    city?:                  string;
+    country?:               string;
+    neighborhood?:          string;
+    from?:                  string;
+    to?:                    string;
+    numOfPeople?:           number;
+    pageSize:               number;
+    pageNumber:             number;
 }
