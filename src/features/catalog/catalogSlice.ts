@@ -2,6 +2,7 @@ import {createAsyncThunk, createEntityAdapter, createSlice} from "@reduxjs/toolk
 import {Residence, ResidenceSearch} from "../../app/models/residence";
 import agent from "../../app/api/agent";
 import {RootState} from "../../store/configureStore";
+import {Metadata} from "../../app/models/metadata";
 
 const residencesAdapter = createEntityAdapter<Residence>();
 
@@ -9,6 +10,7 @@ interface ResidenceState{
     residencesLoaded: boolean;
     status: string;
     residenceParams: ResidenceSearch;
+    metadata: Metadata | null;
 }
 
 function getAxiosParams(residencePrams: ResidenceSearch){
@@ -20,6 +22,7 @@ function getAxiosParams(residencePrams: ResidenceSearch){
     if(residencePrams.city) params.append('city', residencePrams.city.toString());
     if(residencePrams.country) params.append('country', residencePrams.country.toString());
     if(residencePrams.neighborhood) params.append('neighborhood', residencePrams.neighborhood.toString());
+    if(residencePrams.internet) params.append('internet', residencePrams.internet.toString());
     return params;
 }
 
@@ -28,7 +31,9 @@ export const fetchResidencesAsync = createAsyncThunk<Residence[], void, {state:R
     async (_,thunkAPI) => {
         const params = getAxiosParams(thunkAPI.getState().catalog.residenceParams)
         try{
-            return await agent.Catalog.list(params);
+            const response =  await agent.Catalog.list(params);
+            thunkAPI.dispatch(setMetaData(response.metadata));
+            return response.items
         }catch(error){
             console.log(error);
         }
@@ -53,7 +58,7 @@ function initParams(): ResidenceSearch{
         city: null,
         country: null,
         neighborhood: null,
-        pageSize : 3,
+        pageSize : 10,
         pageNumber : 1
     }
 }
@@ -63,12 +68,20 @@ export const catalogSlice = createSlice({
     initialState: residencesAdapter.getInitialState<ResidenceState>({
         residencesLoaded: false,
         status: 'idle',
-        residenceParams: initParams()
+        residenceParams: initParams(),
+        metadata: null
     }),
     reducers: {
         setResidenceParams: (state, action) => {
             state.residencesLoaded = false;
+            state.residenceParams = {...state.residenceParams, ...action.payload, pageNumber: 1};
+        },
+        setPageNumber: (state, action) => {
+            state.residencesLoaded = false;
             state.residenceParams = {...state.residenceParams, ...action.payload};
+        },
+        setMetaData:(state, action) =>{
+            state.metadata = action.payload;
         },
         setResidenceParamsNoState: (state, action) => {
             // state.residencesLoaded = false;
@@ -112,4 +125,9 @@ export const catalogSlice = createSlice({
 
 export const residencesSelectors = residencesAdapter.getSelectors((state: RootState) => state.catalog);
 
-export const {setResidenceParams, resetResidenceParams,setFromDate,setResidencesLoaded} = catalogSlice.actions;
+export const {setResidenceParams,
+    resetResidenceParams,
+    setFromDate,
+    setResidencesLoaded,
+    setMetaData,
+    setPageNumber} = catalogSlice.actions;

@@ -14,6 +14,11 @@ export interface Residence {
     smoking:               boolean;
     pets:                  boolean;
     events:                boolean;
+    internet:              boolean;
+    aircondition:          boolean;
+    kitchen:               boolean;
+    parkingSpot:           boolean;
+    tv:                    boolean;
     minDaysForReservation: number;
     imageURL:              string;
 }
@@ -25,6 +30,11 @@ export interface ResidenceSearch{
     from?:                  string;
     to?:                    string;
     numOfPeople?:           number;
+    internet?:              boolean | null;
+    aircondition?:          boolean | null;
+    kitchen?:               boolean | null;
+    parkingSpot?:           boolean | null;
+    tv?:                    boolean | null;
     pageSize:               number;
     pageNumber:             number;
 }

@@ -9,7 +9,7 @@ export default function ResidenceList({residences}: Props){
     return(
         <Grid container spacing={4}>
             {residences.map(residence =>(
-                <Grid item xs={3} key={residence.id}>
+                <Grid item xs={4} key={residence.id}>
                     <ResidenceCard key={residence.id} residence={residence}/>
                 </Grid>
             ))}

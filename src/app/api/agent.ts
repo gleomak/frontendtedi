@@ -1,5 +1,9 @@
 import axios, {AxiosResponse} from "axios";
 import {store} from "../../store/configureStore";
+import {PaginatedResponse} from "../models/metadata";
+
+
+const sleep = () => new Promise(resolve => setTimeout(resolve, 500))
 
 axios.defaults.baseURL = 'http://localhost:5000/api/';
 const responseBody = (response: AxiosResponse) => response.data;
@@ -8,6 +12,17 @@ axios.interceptors.request.use(config => {
     const token = store.getState().account.user?.token;
     if(token) config.headers.Authorization = `Bearer ${token}`;
     return config;
+})
+
+axios.interceptors.response.use(async response =>{
+    await sleep();
+    const pagination =  response.headers['pagination'];
+    if(pagination){
+        response.data = new PaginatedResponse(response.data, JSON.parse(pagination));
+        console.log(response);
+        return response;
+    }
+    return response
 })
 
 const requests = {
