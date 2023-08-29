@@ -1,6 +1,7 @@
-import axios, {AxiosResponse} from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {store} from "../../store/configureStore";
 import {PaginatedResponse} from "../models/metadata";
+import {toast} from "react-toastify";
 
 
 const sleep = () => new Promise(resolve => setTimeout(resolve, 500))
@@ -23,6 +24,25 @@ axios.interceptors.response.use(async response =>{
         return response;
     }
     return response
+}, (error: AxiosError) => {
+    const{data, status} = error.response as AxiosResponse;
+    switch(status){
+        case 400:
+            if(data.errors){
+                const modelStateErrors: string[] = [];
+                for (const key in data.errors){
+                    if(data.errors[key]){
+                        modelStateErrors.push(data.errors[key])
+                    }
+                }
+                throw modelStateErrors.flat();
+            }
+            toast.error(data.title);
+            break;
+        default:
+            break;
+    }
+    return Promise.reject(error.response);
 })
 
 const requests = {

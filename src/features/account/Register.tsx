@@ -13,18 +13,32 @@ import {useForm} from "react-hook-form";
 import {useAppDispatch} from "../../store/configureStore";
 import agent from "../../app/api/agent";
 import {useState} from "react";
+import {toast} from "react-toastify";
 
 
 // // TODO remove, this demo shouldn't need to reset the theme.
 // const defaultTheme = createTheme();
 
 export default function Register() {
+    const navigate = useNavigate();
     const{register, handleSubmit, setError,
-        formState:{isSubmitting, errors, isValid}} = useForm()
+        formState:{isSubmitting, errors, isValid}} = useForm({
+        mode: 'onTouched'
+    });
 
-    function handleApiErrors(response: any) {
-        const errors = Object.values(response.errors).flat();
-        console.log();
+    function handleApiErrors(errors: any) {
+        console.log(errors);
+        if(errors){
+            errors.forEach((error: string, index: number) => {
+                if (error.includes('Password')) {
+                    setError('password', { message: error })
+                } else if (error.includes('Email')) {
+                    setError('email', { message: error })
+                } else if (error.includes('Username')) {
+                    setError('username', { message: error })
+                }
+            });
+        }
     }
     return (
         <Container component={Paper} maxWidth="sm" sx={{display : 'flex', flexDirection: 'column', alignItems: 'center', p:4}}>
@@ -37,7 +51,11 @@ export default function Register() {
             <Box component="form"
                  onSubmit={handleSubmit(data =>
                      agent.Account.register(data)
-                         // .catch(response => handleApiErrors(response))
+                         .then(() => {
+                             toast.success('Registration successful, you can now Login!')
+                             navigate('/login');
+                         })
+                         .catch(errors => handleApiErrors(errors))
                      )}
                  noValidate sx={{ mt: 1 }}>
                 <TextField
@@ -54,7 +72,13 @@ export default function Register() {
                     fullWidth
                     label="Email"
                     // autoFocus
-                    {...register('email', {required: 'Email is required!'})}
+                    {...register('email', {
+                        required: 'Email is required!',
+                        pattern:{
+                            value: /^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{2,5})$/,
+                            message: 'Not a valid email address'
+                        }
+                    })}
                     error={!!errors.email}
                     helperText = {errors?.email?.message as string}
                 />
@@ -63,7 +87,13 @@ export default function Register() {
                     fullWidth
                     label="Password"
                     type="password"
-                    {...register('password', {required : 'Password is required!'})}
+                    {...register('password', {
+                        required : 'Password is required!',
+                        pattern:{
+                            value: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/,
+                            message: 'Password does not meet complexity requirements'
+                        }
+                    })}
                     error={!!errors.password}
                     helperText = {errors?.password?.message as string}
                 />
