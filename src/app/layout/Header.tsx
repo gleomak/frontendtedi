@@ -8,7 +8,7 @@ import {useSelector} from "react-redux";
 
 const midLinks= [
     {title:'catalog', path:'/catalog'},
-    {title:'about', path:'/about'},
+    {title:'about', path:'/ControlPanel'},
     {title:'contact', path:'/contact'},
 
 ]
@@ -44,18 +44,14 @@ export default function Header({darkMode,handleThemeChange}: Props){
                 </Box>
 
                 <Box display = 'flex' alignItems = 'Center'>
-                    <List sx={{display:'flex'}}>
-                        {midLinks.map(({title,path}) =>(
-                            <ListItem
-                                component={NavLink}
-                                to={path}
-                                key={path}
-                                sx={{color:'inherit',typography:'h6'}}
-                            >
-                                {title}
-                            </ListItem>
-                        ))}
-                    </List>
+                    {user && user.roles?.includes('Admin') &&
+                        <ListItem
+                            component={NavLink}
+                            to={'/controlPanel'}
+                            sx={{color:'inherit',typography:'h6'}}
+                        >
+                            Control Panel
+                        </ListItem>}
                 </Box>
                 <Box display = 'flex' alignItems='center'>
                     {user ? (<SignedInMenu />) : (

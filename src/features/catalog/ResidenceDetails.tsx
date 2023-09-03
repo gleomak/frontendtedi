@@ -1,5 +1,5 @@
 import Typography from "@mui/material/Typography";
-import {useParams} from "react-router-dom";
+import {NavLink, useParams} from "react-router-dom";
 import {SetStateAction, useEffect, useState} from "react";
 import {Grid, Button, ImageListItem, ImageList, IconButton, Rating} from "@mui/material";
 import {Modal} from "@mui/material";
@@ -55,7 +55,7 @@ export default function ResidenceDetails() {
                     </ImageList>
                 </Grid>
                 <Grid item xs={6} md={4}>
-                    <p className={"title"}> {residence.residenceType }</p>
+                    <p className={"title"}> {residence.title }</p>
                     <p className={"address"}> {residence.neighborhood}, {residence.city} , {residence.country} </p>
                     <div className={"spaceDetails-div"}>
                         <u className={"subDetailsTitle"}>Details</u>
@@ -88,9 +88,9 @@ export default function ResidenceDetails() {
                                 <Grid item xs>
                                     <div className={"landlordImageContainer"}>
                                         <img
-                                        src='https://images.unsplash.com/photo-1551963831-b3b1ca40c98e'
-                                        alt='Breakfast'
-                                        loading="lazy"
+                                            src='https://images.unsplash.com/photo-1551963831-b3b1ca40c98e'
+                                            alt='Breakfast'
+                                            loading="lazy"
                                         />
                                     </div>
                                 </Grid>
@@ -112,28 +112,31 @@ export default function ResidenceDetails() {
             </Grid>
 
             <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
-                <Button variant="contained" disableElevation>
-                    Confirm Reservation
-                </Button>
+                <NavLink to={`/catalog/reservation/${id}`}>
+                    <Button variant="contained" disableElevation>
+                        Confirm Reservation
+                    </Button>
+                </NavLink>
+
             </div>
 
             <Modal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
             >
-                    <div className={"modal-content"}>
-                        <IconButton className="arrow left" onClick={handlePreviousImage}>
-                            <ArrowBackIosIcon />
-                        </IconButton>
-                        <img
-                            src={`${itemData[selectedImageIndex].img}?w=800&h=800&fit=crop&auto=format`}
-                            alt={itemData[selectedImageIndex].title}
-                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                        />
-                        <IconButton className="arrow right" onClick={handleNextImage}>
-                            <ArrowForwardIosIcon />
-                        </IconButton>
-                    </div>
+                <div className={"modal-content"}>
+                    <IconButton className="arrow left" onClick={handlePreviousImage}>
+                        <ArrowBackIosIcon />
+                    </IconButton>
+                    <img
+                        src={`${itemData[selectedImageIndex].img}?w=800&h=800&fit=crop&auto=format`}
+                        alt={itemData[selectedImageIndex].title}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    />
+                    <IconButton className="arrow right" onClick={handleNextImage}>
+                        <ArrowForwardIosIcon />
+                    </IconButton>
+                </div>
             </Modal>
         </div>
 

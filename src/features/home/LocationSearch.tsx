@@ -24,7 +24,6 @@ const LocationSearch = () => {
     const handleChange = (event : any) => {
         setGuests(event.target.value);
     };
-
     const generateGuestOptions = () => {
         const options = [];
         for (let i = 1; i <= 10; i++) {
@@ -76,14 +75,18 @@ const LocationSearch = () => {
             <DatePicker
                 label = "Holidays Starting From"
                 format="DD/MM/YYYY"
-                onChange={(newDate) => dispatch(setResidenceParams({ from: newDate }))}
+                onChange={(newDate : any) => {
+                    const serializedDate = newDate.toISOString();
+                    dispatch(setResidenceParams({ from: serializedDate }))}}
             />
 
             {/* To */}
             <Divider orientation="vertical" flexItem />
             <DatePicker label="Holidays Ending On"
                 format="DD/MM/YYYY"
-                onChange={(newDate) => dispatch(setResidenceParams({ to: newDate }))}
+                        onChange={(newDate : any) => {
+                            const serializedDate = newDate.toISOString();
+                            dispatch(setResidenceParams({ to: serializedDate }))}}
             />
 
             {/* Add guests */}

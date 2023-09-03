@@ -39,23 +39,46 @@ axios.interceptors.response.use(async response =>{
             }
             toast.error(data.title);
             break;
+        case 401:
+            toast.error(data.title);
+            break;
+        case 403:
+            toast.error('You are not allowed to do that!');
+            break;
         default:
             break;
     }
     return Promise.reject(error.response);
 })
 
+function createFormData(item: any) {
+    let formData = new FormData();
+    for (const key in item) {
+        formData.append(key, item[key])
+    }
+    formData.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+    });
+    return formData;
+}
+
 const requests = {
     get:(url:string, params?: URLSearchParams) => axios.get(url, {params}).then(responseBody),
+    get2:(url:string, body: {}) => axios.get(url, body).then(responseBody),
     post:(url:string, body: {}) => axios.post(url, body).then(responseBody),
     put:(url:string, body: {}) => axios.put(url, body).then(responseBody),
     delete:(url:string) => axios.delete(url).then(responseBody),
+    postForm: (url: string, data: FormData) => axios.post(url, data, {
+        headers: {'Content-type': 'multipart/form-data'}
+    }).then(responseBody),
 }
 
 const Account ={
     login: (values:any) => requests.post('Account/login', values),
-    register: (values:any) => requests.post('Account/register', values),
-    currentUser: () => requests.get('Account/currentUser')
+    register: (values: FormData) => requests.postForm('Account/register', values),
+    currentUser: () => requests.get('Account/currentUser'),
+    getUserDetails:(values : URLSearchParams ) => requests.get('Account/getUserDetails', values),
+    editUserProfile:(values: FormData) => requests.postForm('Account/editUserProfile', values),
 }
 
 const Catalog={

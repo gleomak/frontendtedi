@@ -13,7 +13,7 @@ import {useState} from "react";
 import agent from "../../app/api/agent";
 import {FieldValue, FieldValues, useForm} from "react-hook-form";
 import {useAppDispatch} from "../../store/configureStore";
-import {signInUser} from "./accountSlice";
+import {setUser, signInUser} from "./accountSlice";
 
 
 // // TODO remove, this demo shouldn't need to reset the theme.
@@ -26,8 +26,9 @@ export default function Login() {
         formState:{isSubmitting, errors, isValid}} = useForm()
 
     async function submitForm(data:FieldValues){
-        await dispatch(signInUser(data));
-        navigate('/catalog');
+        const user = await dispatch(signInUser(data));
+        // dispatch(state => setUser(user));
+        // navigate('/catalog');
     }
 
     return (

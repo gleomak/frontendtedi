@@ -1,5 +1,6 @@
 export interface Residence {
     id:                    number;
+    title:                 string;
     neighborhood:          string;
     city:                  string;
     country:               string;

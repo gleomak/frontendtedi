@@ -2,6 +2,7 @@ import {Button, Fade, Menu, MenuItem} from "@mui/material";
 import React from "react";
 import {useAppDispatch, useAppSelector} from "../../store/configureStore";
 import {signOut} from "../../features/account/accountSlice";
+import {NavLink} from "react-router-dom";
 
 export default function SignedInMenu(){
     const dispatch = useAppDispatch();
@@ -31,7 +32,7 @@ export default function SignedInMenu(){
                 onClose={handleClose}
                 TransitionComponent={Fade}
             >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <NavLink to={'/myProfile'} ><MenuItem onClick={handleClose}>Profile</MenuItem></NavLink>
                 {/*<MenuItem onClick={handleClose}>My account</MenuItem>*/}
                 <MenuItem onClick={() => dispatch(signOut())}>Logout</MenuItem>
             </Menu>

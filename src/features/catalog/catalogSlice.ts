@@ -17,7 +17,7 @@ function getAxiosParams(residencePrams: ResidenceSearch){
     const params = new URLSearchParams();
     params.append('pageNumber', residencePrams.pageNumber.toString());
     params.append('pageSize', residencePrams.pageSize.toString());
-    if(residencePrams.from) params.append('from', residencePrams.from);
+    if(residencePrams.from) params.append('from', residencePrams.from.toString());
     if(residencePrams.to) params.append('to', residencePrams.to.toString());
     if(residencePrams.city) params.append('city', residencePrams.city.toString());
     if(residencePrams.country) params.append('country', residencePrams.country.toString());
@@ -76,6 +76,11 @@ export const catalogSlice = createSlice({
             state.residencesLoaded = false;
             state.residenceParams = {...state.residenceParams, ...action.payload, pageNumber: 1};
         },
+        setDateParams: (state, action) => {
+            state.residencesLoaded = false;
+
+            state.residenceParams = {...state.residenceParams, ...action.payload.toISOString(), pageNumber: 1};
+        },
         setPageNumber: (state, action) => {
             state.residencesLoaded = false;
             state.residenceParams = {...state.residenceParams, ...action.payload};
@@ -91,7 +96,7 @@ export const catalogSlice = createSlice({
             state.residencesLoaded = false;
         },
         setFromDate: (state, action) => {
-            state.residenceParams.from = action.payload;
+            state.residenceParams.from = action.payload.from.toISOString();
         },
         resetResidenceParams: (state) => {
             state.residencesLoaded = false;
