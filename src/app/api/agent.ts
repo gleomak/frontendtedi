@@ -83,7 +83,8 @@ const Account ={
 
 const Catalog={
     list: (params: URLSearchParams) => requests.get('Residence', params),
-    details: (id: number) => requests.get(`Residence/${id}`)
+    details: (id: number) => requests.get(`Residence/${id}`),
+    postReservation: (values: any) => requests.post('Reservation/postReservation', values)
 }
 
 

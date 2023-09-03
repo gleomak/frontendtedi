@@ -114,7 +114,7 @@ export default function ResidenceDetails() {
             <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
                 <NavLink to={`/catalog/reservation/${id}`}>
                     <Button variant="contained" disableElevation>
-                        Confirm Reservation
+                        Create a Reservation
                     </Button>
                 </NavLink>
 

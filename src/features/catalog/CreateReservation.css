@@ -1,0 +1,27 @@
+.mainDiv{
+    max-height: available;
+    background-color: #FAF9F6;
+    border-radius: 100px;
+    padding: 70px;
+    width: 100%;
+    height: 100%
+}
+
+.title{
+    display: flex;
+    justify-content: center;
+    padding-bottom: 30px;
+}
+
+.sub1{
+    display: flex;
+    align-content: center;
+    font-size: x-large;
+    text-decoration: underline;
+}
+
+.price{
+    padding:15px;
+    font-size: xxx-large;
+    color: #1976d2;
+}

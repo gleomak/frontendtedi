@@ -6,6 +6,9 @@ import { DateRangePicker } from "react-date-range";
 import "react-date-range/dist/styles.css"; // Import the date range picker styles
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { Grid, Button } from "@mui/material";
+import "./CreateReservation.css";
+import {toFormData} from "axios";
+import agent from "../../app/api/agent";
 
 export default function CreateReservation() {
     const dispatch = useAppDispatch();
@@ -16,6 +19,8 @@ export default function CreateReservation() {
     const { status: residenceStatus } = useAppSelector((state) => state.catalog);
 
     const { residenceParams } = useAppSelector(state => state.catalog);
+
+    const {user} = useAppSelector(state => state.account);
 
     const [selectedDateRange, setSelectedDateRange] = useState<{
         startDate: Date;
@@ -60,13 +65,22 @@ export default function CreateReservation() {
         return selectedDays >= residence.minDaysForReservation;
     };
 
+    const handleClick=()=>{
+        const formData=new FormData();
+        formData.append('from', selectedDateRange?.startDate.toString()!);
+        formData.append('to', selectedDateRange?.endDate.toString()!);
+        formData.append('username', user?.username!);
+        formData.append('residenceId', residence.id.toString());
+
+        dispatch(()=> agent.Catalog.postReservation(formData));
+    }
+
     return (
-        <>
+        <div className={"mainDiv"}>
+            <h1 className={"title"}> Finalize your reservation </h1>
             <Grid container spacing={2}>
                 <Grid item xs={6} md={8}>
-                    <h1>Select Reservation Dates:</h1>
-                </Grid>
-                <Grid item xs={6} md={4}>
+                    <h1 className={"sub1"}>Select Reservation Dates</h1>
                     <DateRangePicker
                         ranges={[
                             {
@@ -78,19 +92,38 @@ export default function CreateReservation() {
                         onChange={handleDateRangeChange as any}
                         disabledDates={disabledDays}
                         minDate={new Date()}
+
                     />
+
+                </Grid>
+                <Grid item xs={2} md={4}>
+                    <h1 className={"sub1"}>Residence</h1>
+                    <p className={"residenceDet"}>
+                        - <span className={"detail"}>{residence.title}</span> <br/>
+                        - <span className={"detail"}>{residence.neighborhood}, {residence.city} ({residence.country}) </span> <br/>
+                    </p>
+                    <h1 className={"sub1"}>Cost</h1>
+                     <span className={"detail"}>(Minimum stay is {residence.minDaysForReservation} days)</span> <br/>
+                    - <span className={"detail"}> Total for {calculateSelectedRangeDays()} days is:</span> <br/>
+                    <span className={"price"}> {residence.pricePerNight*calculateSelectedRangeDays()} €</span>
                 </Grid>
             </Grid>
 
-            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '20px'}}>
                 <Button
+                    onClick = {handleClick}
                     variant="contained"
                     disableElevation
                     disabled={!isRangeValid()}
+                    style={{
+                        width: '500px',
+                        height: '50px',
+                        fontSize: '1rem'
+                    }}
                 >
                     Confirm Reservation
                 </Button>
             </div>
-        </>
+        </div>
     );
 }

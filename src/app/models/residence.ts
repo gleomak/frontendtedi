@@ -9,6 +9,7 @@ export interface Residence {
     numOfBathrooms:        number;
     residenceType:         string;
     numOfBedrooms:         number;
+    pricePerNight:         number;
     livingRoom:            boolean;
     squareMeters:          number;
     description:           string;
