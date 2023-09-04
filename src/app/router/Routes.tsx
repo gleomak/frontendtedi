@@ -1,6 +1,6 @@
 import {createBrowserRouter} from "react-router-dom";
 import App from "../layout/App";
-import ControlPanel from "../../features/ControlPanel/ControlPanel";
+import ControlPanel from "../../features/controlPanel/ControlPanel";
 import HomePage from "../../features/home/HomePage";
 import Catalog from "../../features/catalog/Catalog";
 import ContactPage from "../../features/contact/ContactPage";

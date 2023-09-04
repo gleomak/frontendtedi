@@ -33,7 +33,7 @@ export const fetchResidencesAsync = createAsyncThunk<Residence[], void, {state:R
         try{
             const response =  await agent.Catalog.list(params);
             thunkAPI.dispatch(setMetaData(response.metadata));
-            return response.items
+            return response.items;
         }catch(error){
             console.log(error);
         }

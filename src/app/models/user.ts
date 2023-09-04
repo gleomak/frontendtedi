@@ -9,4 +9,5 @@ export interface User{
     pictureURL?: string;
     token: string;
     roles?: string[];
+    roleAuthorized: boolean;
 }

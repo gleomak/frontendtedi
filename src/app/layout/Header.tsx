@@ -8,7 +8,7 @@ import {useSelector} from "react-redux";
 
 const midLinks= [
     {title:'catalog', path:'/catalog'},
-    {title:'about', path:'/ControlPanel'},
+    {title:'about', path:'/controlPanel'},
     {title:'contact', path:'/contact'},
 
 ]

@@ -95,12 +95,17 @@ const TestErrors = {
     getValidationError: () => requests.get('buggy/validation-error'),
 }
 
+const Admin = {
+    getUsers:(params: URLSearchParams) => requests.get('Account/retrieveUserList', params),
+    authorizeUser:(values : any) => requests.post('Account/authorizeUser', values),
+}
 
 
 const agent = {
     Catalog,
     TestErrors,
-    Account
+    Account,
+    Admin
 }
 
 export default agent;

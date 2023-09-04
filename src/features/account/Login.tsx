@@ -28,7 +28,7 @@ export default function Login() {
     async function submitForm(data:FieldValues){
         const user = await dispatch(signInUser(data));
         // dispatch(state => setUser(user));
-        // navigate('/catalog');
+        navigate('/catalog');
     }
 
     return (
