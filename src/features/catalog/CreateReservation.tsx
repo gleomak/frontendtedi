@@ -9,6 +9,7 @@ import { Grid, Button } from "@mui/material";
 import "./CreateReservation.css";
 import {toFormData} from "axios";
 import agent from "../../app/api/agent";
+import {Reservation} from "../../app/models/reservation";
 
 export default function CreateReservation() {
     const dispatch = useAppDispatch();
@@ -22,6 +23,8 @@ export default function CreateReservation() {
 
     const {user} = useAppSelector(state => state.account);
 
+    const [reservationArr, setReservationArr] = useState<Reservation[]>([]);
+
     const [selectedDateRange, setSelectedDateRange] = useState<{
         startDate: Date;
         endDate: Date;
@@ -33,7 +36,20 @@ export default function CreateReservation() {
     });
 
     useEffect(() => {
-        if (!residence) dispatch(fResidenceAsync(parseInt(id!)));
+        if (!residence) {
+            dispatch(fResidenceAsync(parseInt(id!)));
+
+            const getReservations = async () => {
+                const params = new URLSearchParams();
+                params.append("residenceId", id!);
+                const response = await agent.Catalog.getReservations(params);
+                console.log(response);
+                setReservationArr(response);
+            }
+
+            getReservations();
+        }
+
     }, [id, dispatch, residence]);
 
     if (residenceStatus.includes("pending")) return <h3>Loading...</h3>;
