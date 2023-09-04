@@ -65,11 +65,33 @@ export default function CreateReservation() {
         return selectedDays >= residence.minDaysForReservation;
     };
 
+    function formatDateToYYYYMMDD(inputDate : any) {
+        const date = new Date(inputDate);
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed, so we add 1
+        const day = String(date.getDate()).padStart(2, '0');
+
+        const formattedDate = `${year}/${month}/${day}`;
+
+        return formattedDate;
+    }
+
     const handleClick=()=>{
         const formData=new FormData();
-        formData.append('from', selectedDateRange?.startDate.toString()!);
-        formData.append('to', selectedDateRange?.endDate.toString()!);
-        formData.append('username', user?.username!);
+        const start = selectedDateRange?.startDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        });
+        const end = selectedDateRange?.endDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        });
+        formData.append('from', formatDateToYYYYMMDD(start).toString());
+        formData.append('to', formatDateToYYYYMMDD(end).toString());
+        formData.append('userId', user?.id.toString()!);
         formData.append('residenceId', residence.id.toString());
 
         dispatch(()=> agent.Catalog.postReservation(formData));
@@ -92,7 +114,6 @@ export default function CreateReservation() {
                         onChange={handleDateRangeChange as any}
                         disabledDates={disabledDays}
                         minDate={new Date()}
-
                     />
 
                 </Grid>
