@@ -10,6 +10,7 @@ import "./CreateReservation.css";
 import {toFormData} from "axios";
 import agent from "../../app/api/agent";
 import {Reservation} from "../../app/models/reservation";
+import {ReservationFromTo} from "../../app/models/residence";
 
 export default function CreateReservation() {
     const dispatch = useAppDispatch();
@@ -22,8 +23,6 @@ export default function CreateReservation() {
     const { residenceParams } = useAppSelector(state => state.catalog);
 
     const {user} = useAppSelector(state => state.account);
-
-    const [reservationArr, setReservationArr] = useState<Reservation[]>([]);
 
     const [selectedDateRange, setSelectedDateRange] = useState<{
         startDate: Date;
@@ -42,7 +41,23 @@ export default function CreateReservation() {
     if (residenceStatus.includes("pending")) return <h3>Loading...</h3>;
     if (!residence) return <h3>Product not found</h3>;
 
-    const disabledDays: Date[] = [new Date("2023-09-05"), new Date("2023-09-10")]; // Add your disabled days here
+    const populateDisabledDates = (reservations: ReservationFromTo[]) => {
+        const disabledDates: Date[] = [];
+
+        reservations.forEach(reservation => {
+            const currentDate = new Date(reservation.from);
+            const endDate = new Date(reservation.to);
+
+            while (currentDate <= endDate) {
+                disabledDates.push(new Date(currentDate));
+                currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+            }
+        })
+
+        return disabledDates;
+    }
+
+    const disabledDays = populateDisabledDates(residence.reservationFromTo);
 
     const handleDateRangeChange = (ranges: { selection: { startDate: Date; endDate: Date } }) => {
         setSelectedDateRange({
