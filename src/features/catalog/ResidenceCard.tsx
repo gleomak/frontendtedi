@@ -1,6 +1,6 @@
 import {Button, Card, CardActions, CardContent, CardMedia} from "@mui/material";
 import Typography from "@mui/material/Typography";
-import {Residence} from "../../app/models/residence";
+import {ReservationFromTo, Residence} from "../../app/models/residence";
 import {Link} from "react-router-dom";
 
 interface Prop{
@@ -15,12 +15,14 @@ export default function ResidenceCard({residence}:Prop){
                 title="green iguana"
             />
             <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                    {residence.residenceType}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                    {residence.city}
-                </Typography>
+                <>
+                    <Typography gutterBottom variant="h5" component="div">
+                    {residence.id}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {residence.city}
+                    </Typography>
+                </>
             </CardContent>
             <CardActions>
                 <Button size="small">Share</Button>

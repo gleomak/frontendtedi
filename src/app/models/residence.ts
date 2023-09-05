@@ -1,3 +1,8 @@
+export interface ReservationFromTo{
+    from: string;
+    to: string;
+}
+
 export interface Residence {
     id:                    number;
     title:                 string;
@@ -23,6 +28,7 @@ export interface Residence {
     tv:                    boolean;
     minDaysForReservation: number;
     imageURL:              string;
+    reservationFromTo:     ReservationFromTo[];
 }
 
 export interface ResidenceSearch{

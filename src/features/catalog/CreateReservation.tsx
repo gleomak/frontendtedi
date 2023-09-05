@@ -36,20 +36,7 @@ export default function CreateReservation() {
     });
 
     useEffect(() => {
-        if (!residence) {
-            dispatch(fResidenceAsync(parseInt(id!)));
-
-            const getReservations = async () => {
-                const params = new URLSearchParams();
-                params.append("residenceId", id!);
-                const response = await agent.Catalog.getReservations(params);
-                console.log(response);
-                setReservationArr(response);
-            }
-
-            getReservations();
-        }
-
+        if (!residence) dispatch(fResidenceAsync(parseInt(id!)));
     }, [id, dispatch, residence]);
 
     if (residenceStatus.includes("pending")) return <h3>Loading...</h3>;
