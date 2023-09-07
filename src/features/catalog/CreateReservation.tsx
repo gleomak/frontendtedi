@@ -144,7 +144,7 @@ export default function CreateReservation() {
                     <h1 className={"sub1"}>Cost</h1>
                      <span className={"detail"}>(Minimum stay is {residence.minDaysForReservation} days)</span> <br/>
                     - <span className={"detail"}> Total for {calculateSelectedRangeDays()} days is:</span> <br/>
-                    <span className={"price"}> {residence.pricePerNight*calculateSelectedRangeDays()} €</span>
+                    <span className={"price"}> {residence.costPerNight*calculateSelectedRangeDays()} €</span>
                 </Grid>
             </Grid>
 

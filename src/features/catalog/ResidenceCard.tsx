@@ -11,18 +11,16 @@ export default function ResidenceCard({residence}:Prop){
         <Card style={{ border: "none", boxShadow: "none" }}>
             <CardMedia
                 sx={{ height: 140 }}
-                image="/static/images/cards/contemplative-reptile.jpg"
+                image={residence.imageURL[0]}
                 title="green iguana"
             />
             <CardContent>
-                <>
-                    <Typography gutterBottom variant="h5" component="div">
-                    {residence.id}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        {residence.city}
-                    </Typography>
-                </>
+                <Typography gutterBottom variant="h6" component="div">
+                {residence.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    {residence.city}, {residence.neighborhood}
+                </Typography>
             </CardContent>
             <CardActions>
                 <Button size="small">Share</Button>

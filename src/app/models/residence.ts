@@ -14,7 +14,7 @@ export interface Residence {
     numOfBathrooms:        number;
     residenceType:         string;
     numOfBedrooms:         number;
-    pricePerNight:         number;
+    costPerNight:          number;
     livingRoom:            boolean;
     squareMeters:          number;
     description:           string;
@@ -27,7 +27,10 @@ export interface Residence {
     parkingSpot:           boolean;
     tv:                    boolean;
     minDaysForReservation: number;
-    imageURL:              string;
+    address:               string;
+    latitude:              number;
+    longitude:             string;
+    imageURL:              string[];
     reservationFromTo:     ReservationFromTo[];
 }
 

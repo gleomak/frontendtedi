@@ -79,6 +79,7 @@ const Account ={
     currentUser: () => requests.get('Account/currentUser'),
     getUserDetails:(values : URLSearchParams ) => requests.get('Account/getUserDetails', values),
     editUserProfile:(values: FormData) => requests.postForm('Account/editUserProfile', values),
+    getUserResidences:(values: URLSearchParams) => requests.get('Account/getHostResidences', values),
 }
 
 const Catalog={

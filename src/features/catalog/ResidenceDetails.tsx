@@ -15,8 +15,9 @@ export default function ResidenceDetails() {
     const {id} = useParams<{ id: string }>();
     const residence = useAppSelector(state => residencesSelectors.selectById(state, id!));
     const {status: residenceStatus} = useAppSelector(state => state.catalog);
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
-        if (!residence) dispatch(fResidenceAsync(parseInt(id!)));
+        if (!residence) dispatch(fResidenceAsync(parseInt(id!))).then(() => setIsLoading(false));
     }, [id, dispatch, residence])
 
     const [modalOpen, setModalOpen] = useState(false);
@@ -26,28 +27,28 @@ export default function ResidenceDetails() {
         setModalOpen(true);
     };
 
+    if(isLoading && !residence) return <h3>Loading..</h3>
+    if(residenceStatus.includes('pending')) return <h3>Loading...</h3>
+    if(!residence) return <h3>Product not found</h3>
+
     const handlePreviousImage = () => {
-        setSelectedImageIndex(prevIndex => (prevIndex - 1 + itemData.length) % itemData.length);
+        setSelectedImageIndex(prevIndex => (prevIndex - 1 + residence?.imageURL.length!) % residence?.imageURL.length!);
     };
 
     const handleNextImage = () => {
-        setSelectedImageIndex(prevIndex => (prevIndex + 1) % itemData.length);
+        setSelectedImageIndex(prevIndex => (prevIndex + 1) % residence?.imageURL.length!);
     };
-
-    if(residenceStatus.includes('pending')) return <h3>Loading...</h3>
-    if(!residence) return <h3>Product not found</h3>
 
     return(
         <div className={"mainDiv"}>
             <Grid container spacing={2}>
                 <Grid item xs={6} md={8}>
                     <ImageList sx={{ width: 600, height: 550 }} cols={3} rowHeight={164}>
-                        {itemData.map((item, index) => (
-                            <ImageListItem key={item.img} onClick={() => handleImageClick(index)}>
+                        {residence.imageURL.map((imageURL, index) => (
+                            <ImageListItem key={index} onClick={() => handleImageClick(index)}>
                                 <img
-                                    src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
-                                    srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                                    alt={item.title}
+                                    src={`${imageURL}?w=164&h=164&fit=crop&auto=format`}
+                                    srcSet={`${imageURL}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
                                     loading="lazy"
                                 />
                             </ImageListItem>
@@ -129,8 +130,7 @@ export default function ResidenceDetails() {
                         <ArrowBackIosIcon />
                     </IconButton>
                     <img
-                        src={`${itemData[selectedImageIndex].img}?w=800&h=800&fit=crop&auto=format`}
-                        alt={itemData[selectedImageIndex].title}
+                        src={`${residence.imageURL[selectedImageIndex]}?w=800&h=800&fit=crop&auto=format`}
                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     />
                     <IconButton className="arrow right" onClick={handleNextImage}>

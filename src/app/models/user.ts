@@ -10,4 +10,5 @@ export interface User{
     token: string;
     roles?: string[];
     roleAuthorized: boolean;
+    userId : string;
 }

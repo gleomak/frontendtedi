@@ -10,6 +10,7 @@ import Register from "../../features/account/Register";
 import MyProfile from "../../features/account/MyProfile";
 import RequireAuth from "./RequireAuth";
 import CreateReservation from "../../features/catalog/CreateReservation";
+import MyResidences from "../../features/account/MyResidences";
 
 export const router= createBrowserRouter([
     {
@@ -18,6 +19,9 @@ export const router= createBrowserRouter([
         children: [
             {element: <RequireAuth roles={['Admin']} />, children: [
                     {path: 'controlPanel', element: <ControlPanel />},
+            ]},
+            {element: <RequireAuth roles={['Host']} />, children: [
+                    {path: 'myResidences', element: <MyResidences />},
             ]},
             {path: '', element: <HomePage/>},
             {path: 'catalog', element: <Catalog/>},

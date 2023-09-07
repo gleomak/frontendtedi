@@ -1,4 +1,4 @@
-import {Button, Fade, Menu, MenuItem} from "@mui/material";
+import {Button, Fade, ListItem, Menu, MenuItem} from "@mui/material";
 import React from "react";
 import {useAppDispatch, useAppSelector} from "../../store/configureStore";
 import {signOut} from "../../features/account/accountSlice";
@@ -19,6 +19,8 @@ export default function SignedInMenu(){
 
     return (
         <>
+
+
             <Button
                 color = 'inherit'
                 onClick={handleClick}
@@ -33,6 +35,9 @@ export default function SignedInMenu(){
                 TransitionComponent={Fade}
             >
                 <NavLink to={'/myProfile'} ><MenuItem onClick={handleClose}>Profile</MenuItem></NavLink>
+                {user && user.roles?.includes('Host') &&
+                    <NavLink to={'myResidences'}><MenuItem onClick={handleClose}> My Residences</MenuItem></NavLink>
+                }
                 {/*<MenuItem onClick={handleClose}>My account</MenuItem>*/}
                 <MenuItem onClick={() => dispatch(signOut())}>Logout</MenuItem>
             </Menu>
