@@ -120,16 +120,19 @@ export default function MyResidenceEdit(){
         // formData.append('minDaysForReservation', data.minDaysForReservation);
         // formData.append( 'address', data.address);
         const namesAdd = Array.from(imagesToAdd).map((file) => file.name);
-        namesAdd.forEach((fileName) => {
-            formData.append(`filesToAdd`, fileName);
-        });
+        imagesToAdd.forEach((filename) =>{
+            formData.append('filesToAdd', filename);
+        })
+        // namesAdd.forEach((fileName) => {
+        //     formData.append(`filesToAdd`, fileName);
+        // });
         selectedImagesArray.forEach((fileName) =>{
-           formData.append('filesToDelete', fileName);
+           formData.append('imagesToDelete', fileName);
         });
 
-        console.log(selectedImagesArray);
+        // console.log(selectedImagesArray);
         console.log(imagesToAdd);
-        console.log(namesAdd);
+        // console.log(namesAdd);
         await agent.Catalog.updateHostResidence(formData);
     }
 
