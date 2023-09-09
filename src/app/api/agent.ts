@@ -20,7 +20,7 @@ axios.interceptors.response.use(async response =>{
     const pagination =  response.headers['pagination'];
     if(pagination){
         response.data = new PaginatedResponse(response.data, JSON.parse(pagination));
-        console.log(response);
+        // console.log(response);
         return response;
     }
     return response
@@ -56,9 +56,9 @@ function createFormData(item: any) {
     for (const key in item) {
         formData.append(key, item[key])
     }
-    formData.forEach((value, key) => {
-        console.log(`${key}: ${value}`);
-    });
+    // formData.forEach((value, key) => {
+    //     console.log(`${key}: ${value}`);
+    // });
     return formData;
 }
 
@@ -86,7 +86,8 @@ const Catalog={
     list: (params: URLSearchParams) => requests.get('Residence', params),
     details: (id: number) => requests.get(`Residence/${id}`),
     postReservation: (values: any) => requests.post('Reservation/postReservation', values),
-    getReservations: (params: URLSearchParams) => requests.get('/Reservation/getReservationsForResidence', params)
+    getReservations: (params: URLSearchParams) => requests.get('/Reservation/getReservationsForResidence', params),
+    updateHostResidence:(values: FormData) => requests.postForm('Residence/updateResidence', values),
 }
 
 

@@ -40,7 +40,8 @@ const LocationSearch = () => {
         <Paper
             sx={{
                 borderRadius: 50,
-                ml: -30,
+                ml: -20,
+                mr: -20,
                 display: 'flex',
                 alignItems: 'center', // Align items vertically in the center
                 justifyContent: 'space-around', // Distribute items evenly along the horizontal axis

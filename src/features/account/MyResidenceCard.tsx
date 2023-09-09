@@ -32,7 +32,7 @@ export default function MyResidenceCard({residence}:Prop){
                 </>
             </CardContent>
             <CardActions>
-                <Button component={Link} to={`/catalog/${residence.id}`} size="small" variant="contained">Details/Edit</Button>
+                <Button component={Link} to={`/myResidenceEdit/${residence.id}`} size="small" variant="contained">Details/Edit</Button>
                 <IconButton
                     aria-label="delete product"
                     color="error"

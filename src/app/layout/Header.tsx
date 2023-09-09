@@ -38,7 +38,7 @@ export default function Header({darkMode,handleThemeChange}: Props){
                                 sx={{color:'inherit', textDecoration:'none'}}
                                 onClick={ event => dispatch(resetResidenceParams())}
                     >
-                        RE-STORE
+                        MMB
                     </Typography>
                     <Switch checked={darkMode} onChange={handleThemeChange} />
                 </Box>
