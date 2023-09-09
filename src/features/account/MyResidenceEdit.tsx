@@ -57,7 +57,7 @@ export default function MyResidenceEdit(){
             setValue('neighborhood', residence.neighborhood);
             setValue('city',residence.city);
             setValue('country', residence.country);
-            setValue('residenceCapacity', residence.residenceCapacity);
+            setValue('residentCapacity', residence.residentCapacity);
             setValue('numOfBeds', residence.numOfBeds);
             setValue('numOfBathrooms', residence.numOfBathrooms);
             setValue('residenceType', residence.residenceType);
@@ -96,36 +96,34 @@ export default function MyResidenceEdit(){
         const selectedImagesArray = Object.keys(selectedImages);
         setImagesToDelete(selectedImagesArray);
         const formData = new FormData();
-        // formData.append('title', data.title);
-        // formData.append('neighborhood', data.neighborhood);
-        // formData.append('city',data.city);
-        // formData.append('country', data.country);
-        // formData.append('residenceCapacity', data.residenceCapacity);
-        // formData.append('numOfBeds', data.numOfBeds);
-        // formData.append('numOfBathrooms', data.numOfBathrooms);
-        // formData.append('residenceType', data.residenceType);
-        // formData.append('numOfBedrooms',data.numOfBedrooms);
-        // formData.append('costPerNight', data.costPerNight);
-        // formData.append( 'livingRoom', data.livingRoom);
-        // formData.append( 'squareMeters', data.squareMeters);
-        // formData.append( 'description', data.description);
-        // formData.append('smoking', data.smoking);
-        // formData.append( 'pets', data.pets);
-        // formData.append( 'events', data.events);
-        // formData.append( 'internet', data.internet);
-        // formData.append('aircondition', data.aircondition);
-        // formData.append( 'kitchen', data.kitchen);
-        // formData.append('parkingSpot', data.parkingSpot);
-        // formData.append( 'tv', data.tv);
-        // formData.append('minDaysForReservation', data.minDaysForReservation);
-        // formData.append( 'address', data.address);
+        formData.append('id', residence?.id.toString()!);
+        formData.append('title', data.title);
+        formData.append('neighborhood', data.neighborhood);
+        formData.append('city',data.city);
+        formData.append('country', data.country);
+        formData.append('residentCapacity', data.residentCapacity);
+        formData.append('numOfBeds', data.numOfBeds);
+        formData.append('numOfBathrooms', data.numOfBathrooms);
+        formData.append('residenceType', data.residenceType);
+        formData.append('numOfBedrooms',data.numOfBedrooms);
+        formData.append('costPerNight', data.costPerNight);
+        formData.append( 'livingRoom', data.livingRoom);
+        formData.append( 'squareMeters', data.squareMeters);
+        formData.append( 'description', data.description);
+        formData.append('smoking', data.smoking);
+        formData.append( 'pets', data.pets);
+        formData.append( 'events', data.events);
+        formData.append( 'internet', data.internet);
+        formData.append('aircondition', data.aircondition);
+        formData.append( 'kitchen', data.kitchen);
+        formData.append('parkingSpot', data.parkingSpot);
+        formData.append( 'tv', data.tv);
+        formData.append('minDaysForReservation', data.minDaysForReservation);
+        formData.append( 'address', data.address);
         const namesAdd = Array.from(imagesToAdd).map((file) => file.name);
         imagesToAdd.forEach((filename) =>{
             formData.append('filesToAdd', filename);
         })
-        // namesAdd.forEach((fileName) => {
-        //     formData.append(`filesToAdd`, fileName);
-        // });
         selectedImagesArray.forEach((fileName) =>{
            formData.append('imagesToDelete', fileName);
         });
@@ -146,7 +144,7 @@ export default function MyResidenceEdit(){
                                 {residence.imageURL.map((imageURL, index) => (
                                     <ImageListItem key={index}>
                                         <img
-                                            src={`${imageURL}?w=150&h=150&fit=crop&auto=format`}
+                                            src={`${imageURL}?w=164&h=164&fit=crop&auto=format`}
                                             srcSet={`${imageURL}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
                                             loading="lazy"
                                         />
@@ -202,8 +200,8 @@ export default function MyResidenceEdit(){
                                 fullWidth
                                 margin="normal"
                                 autoFocus
-                                label="Residence Capacity"
-                                {...register('residenceCapacity', {required: 'Residence Capacity is required!'})}
+                                label="Resident Capacity"
+                                {...register('residentCapacity', {required: 'Resident Capacity is required!'})}
                             />
                             <TextField
                                 fullWidth

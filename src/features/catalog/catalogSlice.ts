@@ -22,7 +22,12 @@ function getAxiosParams(residencePrams: ResidenceSearch){
     if(residencePrams.city) params.append('city', residencePrams.city.toString());
     if(residencePrams.country) params.append('country', residencePrams.country.toString());
     if(residencePrams.neighborhood) params.append('neighborhood', residencePrams.neighborhood.toString());
+    if(residencePrams.numOfPeople) params.append('numOfPeople', residencePrams.numOfPeople.toString());
     if(residencePrams.internet) params.append('internet', residencePrams.internet.toString());
+    if(residencePrams.tv) params.append('tv', residencePrams.tv.toString());
+    if(residencePrams.kitchen) params.append('kitchen', residencePrams.kitchen.toString());
+    if(residencePrams.aircondition) params.append('aircondition', residencePrams.aircondition.toString());
+    if(residencePrams.parkingSpot) params.append('parkingSpot', residencePrams.parkingSpot.toString());
     return params;
 }
 

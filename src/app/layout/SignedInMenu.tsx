@@ -29,17 +29,19 @@ export default function SignedInMenu(){
                 {user?.email}
             </Button>
             <Menu
+                id="dropdown-menu"
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
-                TransitionComponent={Fade}
             >
-                <NavLink to={'/myProfile'} ><MenuItem onClick={handleClose}>Profile</MenuItem></NavLink>
-                {user && user.roles?.includes('Host') &&
-                    <NavLink to={'myResidences'}><MenuItem onClick={handleClose}> My Residences</MenuItem></NavLink>
-                }
-                {/*<MenuItem onClick={handleClose}>My account</MenuItem>*/}
-                <MenuItem onClick={() => dispatch(signOut())}>Logout</MenuItem>
+                {user && user.roles?.includes('Host') && [
+                    <NavLink key="myResidences" to="/myResidences">
+                        <MenuItem onClick={handleClose}>My Residences</MenuItem>
+                    </NavLink>,
+                    <NavLink key="createResidence" to="/createResidence">
+                        <MenuItem onClick={handleClose}>Create Residence</MenuItem>
+                    </NavLink>,
+                ]}
             </Menu>
         </>
     );

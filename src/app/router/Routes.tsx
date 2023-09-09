@@ -12,6 +12,7 @@ import RequireAuth from "./RequireAuth";
 import CreateReservation from "../../features/catalog/CreateReservation";
 import MyResidences from "../../features/account/MyResidences";
 import MyResidenceEdit from "../../features/account/MyResidenceEdit";
+import CreateResidence from "../../features/catalog/CreateResidence";
 
 export const router= createBrowserRouter([
     {
@@ -23,7 +24,8 @@ export const router= createBrowserRouter([
             ]},
             {element: <RequireAuth roles={['Host']} />, children: [
                     {path: 'myResidences', element: <MyResidences />},
-                    {path: 'myResidenceEdit/:id', element: <MyResidenceEdit/>}
+                    {path: 'myResidenceEdit/:id', element: <MyResidenceEdit/>},
+                    {path: 'createResidence', element: <CreateResidence/>}
             ]},
             {path: '', element: <HomePage/>},
             {path: 'catalog', element: <Catalog/>},

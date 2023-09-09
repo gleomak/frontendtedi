@@ -9,7 +9,7 @@ export interface Residence {
     neighborhood:          string;
     city:                  string;
     country:               string;
-    residenceCapacity:     string;
+    residentCapacity:      number;
     numOfBeds:             number;
     numOfBathrooms:        number;
     residenceType:         string;

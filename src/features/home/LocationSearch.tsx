@@ -23,6 +23,7 @@ const LocationSearch = () => {
     const dispatch = useAppDispatch();
     const handleChange = (event : any) => {
         setGuests(event.target.value);
+        dispatch(setResidenceParams({numOfPeople : event.target.value}));
     };
     const generateGuestOptions = () => {
         const options = [];
@@ -96,7 +97,8 @@ const LocationSearch = () => {
                 <InputLabel sx={{ marginTop: '8px' }}>Guests</InputLabel>
                 <Select
                     value={guests}
-                    onChange={event => dispatch(setResidenceParams({numOfPeople : event.target.value}))}
+                    onChange={handleChange}
+
                 >
                     {generateGuestOptions()}
                 </Select>
