@@ -54,7 +54,11 @@
     max-height: available;
     background-color: #FAF9F6;
     border-radius: 100px;
-    padding: 70px;
+    padding: 200px;
+}
+
+.descriptionText{
+    word-wrap: break-word;
 }
 
 .modal-content {

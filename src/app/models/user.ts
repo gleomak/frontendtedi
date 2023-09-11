@@ -12,3 +12,10 @@ export interface User{
     roleAuthorized: boolean;
     userId : string;
 }
+
+export interface Host{
+    rating: number;
+    imageURL: string;
+    username: string;
+
+}

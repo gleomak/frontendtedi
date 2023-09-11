@@ -28,10 +28,11 @@ export interface Residence {
     tv:                    boolean;
     minDaysForReservation: number;
     address:               string;
-    latitude:              number;
+    latitude:              string;
     longitude:             string;
     imageURL:              string[];
     reservationFromTo:     ReservationFromTo[];
+    userId:                string;
 }
 
 export interface ResidenceSearch{

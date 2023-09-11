@@ -8,6 +8,13 @@ import MessageIcon from '@mui/icons-material/Message';
 import {useAppDispatch, useAppSelector} from "../../store/configureStore";
 import {fResidenceAsync, residencesSelectors} from "./catalogSlice";
 import "./ResidenceDetails.css";
+import "./Map.css";
+import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
+import L, {Icon} from "leaflet";
+import * as React from "react";
+import markerIconPng from "leaflet/dist/images/marker-icon.png";
+import {Host} from "../../app/models/user";
+import agent from "../../app/api/agent";
 
 
 export default function ResidenceDetails() {
@@ -16,12 +23,31 @@ export default function ResidenceDetails() {
     const residence = useAppSelector(state => residencesSelectors.selectById(state, id!));
     const {status: residenceStatus} = useAppSelector(state => state.catalog);
     const [isLoading, setIsLoading] = useState(true);
+    const [host, setHost] = useState<Host>();
     useEffect(() => {
-        if (!residence) dispatch(fResidenceAsync(parseInt(id!))).then(() => setIsLoading(false));
+        if (!residence) {
+            dispatch(fResidenceAsync(parseInt(id!))).then(() => setIsLoading(false));
+        }
+
+        if(residence){
+            const fetchHost = async () => {
+                const params = new URLSearchParams();
+                params.append("residenceId", residence.id.toString());
+                try {
+                    const response = await agent.Catalog.getHostInfo(params);
+                    setHost(response);
+
+                } catch (error) {
+                    console.error('Error fetching host:', error);
+                }
+            }
+            fetchHost();
+        }
     }, [id, dispatch, residence])
 
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
     const handleImageClick = (index: number) => {
         setSelectedImageIndex(index);
         setModalOpen(true);
@@ -29,6 +55,9 @@ export default function ResidenceDetails() {
 
     if(isLoading && !residence) return <h3>Loading..</h3>
     if(residenceStatus.includes('pending')) return <h3>Loading...</h3>
+
+    const position = L.latLng(Number(residence?.latitude!), Number(residence?.longitude!));
+
     if(!residence) return <h3>Product not found</h3>
 
     const handlePreviousImage = () => {
@@ -41,6 +70,7 @@ export default function ResidenceDetails() {
 
     return(
         <div className={"mainDiv"}>
+            <p className={"title"}> {residence.title }</p>
             <Grid container spacing={2}>
                 <Grid item xs={6} md={8}>
                     <ImageList sx={{ width: 600, height: 550 }} cols={3} rowHeight={164}>
@@ -54,9 +84,24 @@ export default function ResidenceDetails() {
                             </ImageListItem>
                         ))}
                     </ImageList>
+
+                    <MapContainer
+                        center={position}
+                        zoom={8} // You can adjust the initial zoom level
+                    >
+                        <TileLayer
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+                        />
+                        <Marker
+                            icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}
+                            position={position}
+                        >
+                        </Marker>
+                    </MapContainer>
+
                 </Grid>
                 <Grid item xs={6} md={4}>
-                    <p className={"title"}> {residence.title }</p>
                     <p className={"address"}> {residence.neighborhood}, {residence.city} , {residence.country} </p>
                     <div className={"spaceDetails-div"}>
                         <u className={"subDetailsTitle"}>Details</u>
@@ -83,7 +128,15 @@ export default function ResidenceDetails() {
                         <p className={"descriptionText"}> {residence.description} </p>
                     </div>
                     <div className={"spaceDetails-div"}>
-                        <u className={"subDetailsTitle"}>Landlord</u>
+                        <u className={"subDetailsTitle"}>Residence Reviews</u>
+                        <div className={"landlordDetails"}>
+                            <Grid container spacing={1}>
+                                <Rating name="no-value" value={null} readOnly/>
+                            </Grid>
+                        </div>
+                    </div>
+                    <div className={"spaceDetails-div"}>
+                        <u className={"subDetailsTitle"}>{host!.username}</u>
                         <div className={"landlordDetails"}>
                             <Grid container spacing={4}>
                                 <Grid item xs>
@@ -97,7 +150,6 @@ export default function ResidenceDetails() {
                                 </Grid>
                                 <Grid item xs={6} md={4}>
                                     <div className={"grid2"}>
-                                        <a className={"landlordName"}>Nikos Papadopoulos</a>
                                         <Rating name="no-value" value={null} readOnly/>
                                     </div>
                                 </Grid>
@@ -142,54 +194,3 @@ export default function ResidenceDetails() {
 
     )
 }
-
-const itemData = [
-    {
-        img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-        title: 'Breakfast',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
-        title: 'Burger',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1522770179533-24471fcdba45',
-        title: 'Camera',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c',
-        title: 'Coffee',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1533827432537-70133748f5c8',
-        title: 'Hats',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-        title: 'Honey',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1516802273409-68526ee1bdd6',
-        title: 'Basketball',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1518756131217-31eb79b20e8f',
-        title: 'Fern',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1597645587822-e99fa5d45d25',
-        title: 'Mushrooms',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1567306301408-9b74779a11af',
-        title: 'Tomato basil',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1471357674240-e1a485acb3e1',
-        title: 'Sea star',
-    },
-    {
-        img: 'https://images.unsplash.com/photo-1589118949245-7d38baf380d6',
-        title: 'Bike',
-    },
-];
