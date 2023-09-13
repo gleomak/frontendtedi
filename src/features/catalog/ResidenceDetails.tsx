@@ -10,7 +10,7 @@ import {fResidenceAsync, residencesSelectors} from "./catalogSlice";
 import "./ResidenceDetails.css";
 import "./Map.css";
 import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
-import L, {Icon} from "leaflet";
+import L, {Icon, LatLngExpression} from "leaflet";
 import * as React from "react";
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import {Host} from "../../app/models/user";
@@ -24,18 +24,23 @@ export default function ResidenceDetails() {
     const {status: residenceStatus} = useAppSelector(state => state.catalog);
     const [isLoading, setIsLoading] = useState(true);
     const [host, setHost] = useState<Host>();
+    const [position, setPosition] = useState<LatLngExpression | undefined>(undefined);
+    const [booleanHost, setHostBoolean] = useState<boolean>(false);
+
     useEffect(() => {
         if (!residence) {
             dispatch(fResidenceAsync(parseInt(id!))).then(() => setIsLoading(false));
         }
 
         if(residence){
+            setPosition([Number(residence?.latitude), Number(residence?.longitude)]);
             const fetchHost = async () => {
                 const params = new URLSearchParams();
                 params.append("residenceId", residence.id.toString());
                 try {
                     const response = await agent.Catalog.getHostInfo(params);
                     setHost(response);
+                    setHostBoolean(true);
 
                 } catch (error) {
                     console.error('Error fetching host:', error);
@@ -53,10 +58,8 @@ export default function ResidenceDetails() {
         setModalOpen(true);
     };
 
-    if(isLoading && !residence) return <h3>Loading..</h3>
+    if((isLoading && !residence) || !booleanHost) return <h3>Loading..</h3>
     if(residenceStatus.includes('pending')) return <h3>Loading...</h3>
-
-    const position = L.latLng(Number(residence?.latitude!), Number(residence?.longitude!));
 
     if(!residence) return <h3>Product not found</h3>
 
@@ -95,7 +98,7 @@ export default function ResidenceDetails() {
                         />
                         <Marker
                             icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}
-                            position={position}
+                            position={position!}
                         >
                         </Marker>
                     </MapContainer>

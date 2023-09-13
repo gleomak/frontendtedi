@@ -88,7 +88,7 @@ export default function CreateResidence() {
         formData.append('tv', data.tv);
         formData.append('minDaysForReservation', data.minDaysForReservation);
         formData.append('latitude', position[0].toString());
-        formData.append('longitute', position[1].toString());
+        formData.append('longitude', position[1].toString());
         const namesAdd = Array.from(imagesToAdd).map((file) => file.name);
         imagesToAdd.forEach((filename) =>{
             formData.append('files', filename);

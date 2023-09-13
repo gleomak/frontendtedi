@@ -1,7 +1,7 @@
 import {useAppDispatch, useAppSelector} from "../../store/configureStore";
 import {useParams} from "react-router-dom";
 import {fResidenceAsync, residencesSelectors} from "../catalog/catalogSlice";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import {Controller, FieldValues, useForm} from "react-hook-form";
 import Button from "@mui/material/Button";
@@ -20,6 +20,9 @@ import {
 import TextField from "@mui/material/TextField";
 import * as React from "react";
 import agent from "../../app/api/agent";
+import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
+import L, {Icon, LatLngExpression} from "leaflet";
+import markerIconPng from "leaflet/dist/images/marker-icon.png";
 
 
 export default function MyResidenceEdit(){
@@ -33,20 +36,11 @@ export default function MyResidenceEdit(){
     const [imagesToAdd, setImagesToAdd] = useState<File[]>([]);
     const{register, handleSubmit, control, setError, setValue,
         formState:{ errors}} = useForm();
-    const handleCheckboxChange = (imageUrl : string) => {
-        const updatedSelection = { ...selectedImages };
 
-        if (updatedSelection[imageUrl]) {
-            delete updatedSelection[imageUrl];
-        } else {
-            updatedSelection[imageUrl] = true;
-        }
+    const [draggable, setDraggable] = useState(false);
+    const markerRef = useRef(null);
 
-        setSelectedImages(updatedSelection);
-    };
-
-
-
+    const [position, setPosition] = useState<LatLngExpression | undefined>(undefined);
 
     useEffect(() => {
         if (!residence){
@@ -79,12 +73,44 @@ export default function MyResidenceEdit(){
             setValue('latitude', residence.latitude);
             setValue('longitude', residence.longitude);
             setValue('imagesToDelete', residence.imageURL.map(() => false));
+            setPosition([Number(residence.latitude), Number(residence.longitude)]);
+            console.log(residence.latitude + residence.longitude);
+            console.log("POUTSAPOUTSAPOUTSA     "+ position);
         }
     }, [id, dispatch, residence,setValue]);
+
+
+    const eventHandlers = useMemo(
+        () => ({
+            dragend() {
+                const marker = markerRef.current as any; // Use type assertion
+                if (marker != null) {
+                    const latlng = marker._latlng; // Access _latlng property
+                    setPosition(latlng);
+                }
+            },
+        }),
+        []
+    );
+
+    const toggleDraggable = useCallback(() => {
+        setDraggable((d) => !d);
+    }, []);
 
     if(!residence && isLoading) return(<LoadingComponent/>)
     if(!residence) return(<h3>Residence not found :(</h3>)
 
+    const handleCheckboxChange = (imageUrl : string) => {
+        const updatedSelection = { ...selectedImages };
+
+        if (updatedSelection[imageUrl]) {
+            delete updatedSelection[imageUrl];
+        } else {
+            updatedSelection[imageUrl] = true;
+        }
+
+        setSelectedImages(updatedSelection);
+    };
 
     const handleFileChange = (e : any) => {
         const files : File[] = Array.from(e.target.files);
@@ -127,6 +153,11 @@ export default function MyResidenceEdit(){
         selectedImagesArray.forEach((fileName) =>{
            formData.append('imagesToDelete', fileName);
         });
+        if (position) {
+            const [latitude, longitude] = position as [number, number]; // Explicitly cast position as a tuple of numbers
+            formData.append('latitude', latitude.toString());
+            formData.append('longitude', longitude.toString());
+        }
 
         // console.log(selectedImagesArray);
         console.log(imagesToAdd);
@@ -158,6 +189,32 @@ export default function MyResidenceEdit(){
                                     </ImageListItem>
                                 ))}
                             </ImageList>
+
+                            <MapContainer
+                                center={position}
+                                zoom={10} // You can adjust the initial zoom level
+                            >
+                                <TileLayer
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+                                />
+                                <Marker
+                                    icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}
+                                    draggable={draggable}
+                                    position={position!}
+                                    ref={markerRef}
+                                    eventHandlers={eventHandlers}
+                                >
+                                    <Popup minWidth={90}>
+                                        <span onClick={toggleDraggable}>
+                                          {draggable
+                                              ? 'Marker is draggable'
+                                              : 'Click here to make marker draggable'}
+                                        </span>
+                                    </Popup>
+                                </Marker>
+                            </MapContainer>
+
                         </Grid>
                         <Grid item xs={4} md={3.5}>
                             <TextField
@@ -381,7 +438,7 @@ export default function MyResidenceEdit(){
                         </Grid>
                     </Grid>
                     <Button variant="contained" type="submit">
-                        Delete Selected Images
+                       Submit Edited Residence
                     </Button>
                 </CardContent>
             </form>
