@@ -33,6 +33,7 @@ export default function MyResidenceEdit(){
     const [isLoading, setIsLoading] = useState(true);
     const [selectedImages, setSelectedImages] = useState<{ [key: string]: boolean }>({});
     const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+    const [isMapLoading, setMapLoading] = useState<boolean>(true);
     const [imagesToAdd, setImagesToAdd] = useState<File[]>([]);
     const center: LatLngExpression = [37.9838, 23.7275];
     const{register, handleSubmit, control, setError, setValue,
@@ -44,12 +45,14 @@ export default function MyResidenceEdit(){
     const [position, setPosition] = useState<LatLngExpression>(center);
 
     useEffect(() => {
-        if (!residence){
+        if (!residence && id){
 
             dispatch(fResidenceAsync(parseInt(id!))).then(() => {setIsLoading(false);});
         }
         if(residence){
             setPosition([Number(residence.latitude), Number(residence.longitude)]);
+            setMapLoading(false);
+            // console.log(position);
             setValue('title', residence.title);
             setValue('neighborhood', residence.neighborhood);
             setValue('city',residence.city);
@@ -97,7 +100,7 @@ export default function MyResidenceEdit(){
         setDraggable((d) => !d);
     }, []);
 
-    if(!residence && isLoading) return(<LoadingComponent/>)
+    if((!residence && isLoading) || isMapLoading) return(<LoadingComponent/>)
     if(!residence) return(<h3>Residence not found :(</h3>)
 
     const handleCheckboxChange = (imageUrl : string) => {

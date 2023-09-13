@@ -28,7 +28,7 @@ export default function ResidenceDetails() {
     const [booleanHost, setHostBoolean] = useState<boolean>(false);
 
     useEffect(() => {
-        if (!residence) {
+        if (!residence && id) {
             dispatch(fResidenceAsync(parseInt(id!))).then(() => setIsLoading(false));
         }
 
