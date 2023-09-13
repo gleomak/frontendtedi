@@ -34,19 +34,22 @@ export default function MyResidenceEdit(){
     const [selectedImages, setSelectedImages] = useState<{ [key: string]: boolean }>({});
     const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
     const [imagesToAdd, setImagesToAdd] = useState<File[]>([]);
+    const center: LatLngExpression = [37.9838, 23.7275];
     const{register, handleSubmit, control, setError, setValue,
         formState:{ errors}} = useForm();
 
     const [draggable, setDraggable] = useState(false);
     const markerRef = useRef(null);
 
-    const [position, setPosition] = useState<LatLngExpression | undefined>(undefined);
+    const [position, setPosition] = useState<LatLngExpression>(center);
 
     useEffect(() => {
         if (!residence){
-            dispatch(fResidenceAsync(parseInt(id!))).then(() => setIsLoading(false));
+
+            dispatch(fResidenceAsync(parseInt(id!))).then(() => {setIsLoading(false);});
         }
         if(residence){
+            setPosition([Number(residence.latitude), Number(residence.longitude)]);
             setValue('title', residence.title);
             setValue('neighborhood', residence.neighborhood);
             setValue('city',residence.city);
@@ -73,11 +76,8 @@ export default function MyResidenceEdit(){
             setValue('latitude', residence.latitude);
             setValue('longitude', residence.longitude);
             setValue('imagesToDelete', residence.imageURL.map(() => false));
-            setPosition([Number(residence.latitude), Number(residence.longitude)]);
-            console.log(residence.latitude + residence.longitude);
-            console.log("POUTSAPOUTSAPOUTSA     "+ position);
         }
-    }, [id, dispatch, residence,setValue]);
+    }, [id, dispatch, residence, setValue]);
 
 
     const eventHandlers = useMemo(
@@ -201,7 +201,7 @@ export default function MyResidenceEdit(){
                                 <Marker
                                     icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}
                                     draggable={draggable}
-                                    position={position!}
+                                    position={position}
                                     ref={markerRef}
                                     eventHandlers={eventHandlers}
                                 >

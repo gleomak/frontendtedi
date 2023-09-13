@@ -33,7 +33,7 @@ export default function ResidenceDetails() {
         }
 
         if(residence){
-            setPosition([Number(residence?.latitude), Number(residence?.longitude)]);
+            setPosition([Number(residence.latitude), Number(residence.longitude)]);
             const fetchHost = async () => {
                 const params = new URLSearchParams();
                 params.append("residenceId", residence.id.toString());
