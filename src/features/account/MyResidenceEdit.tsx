@@ -13,7 +13,7 @@ import {
     FormControlLabel,
     Grid,
     ImageList,
-    ImageListItem,
+    ImageListItem, ImageListItemBar,
     Input,
     InputLabel
 } from "@mui/material";
@@ -21,9 +21,9 @@ import TextField from "@mui/material/TextField";
 import * as React from "react";
 import agent from "../../app/api/agent";
 import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
-import L, {Icon, LatLngExpression} from "leaflet";
+import L, {Icon} from "leaflet";
+import { LatLngExpression } from 'leaflet';
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
-
 
 export default function MyResidenceEdit(){
     const dispatch = useAppDispatch();
@@ -36,13 +36,13 @@ export default function MyResidenceEdit(){
     const [isMapLoading, setMapLoading] = useState<boolean>(true);
     const [imagesToAdd, setImagesToAdd] = useState<File[]>([]);
     const center: LatLngExpression = [37.9838, 23.7275];
-    const{register, handleSubmit, control, setError, setValue,
-        formState:{ errors}} = useForm();
+    const{register, handleSubmit, control, setError, setValue}
+        = useForm();
 
     const [draggable, setDraggable] = useState(false);
     const markerRef = useRef(null);
 
-    const [position, setPosition] = useState<LatLngExpression>(center);
+    const [position, setPosition] = useState(center);
 
     useEffect(() => {
         if (!residence && id){
@@ -89,7 +89,7 @@ export default function MyResidenceEdit(){
                 const marker = markerRef.current as any; // Use type assertion
                 if (marker != null) {
                     const latlng = marker._latlng; // Access _latlng property
-                    setPosition(latlng);
+                    setPosition([latlng.lat, latlng.lng]);
                 }
             },
         }),
@@ -149,21 +149,21 @@ export default function MyResidenceEdit(){
         formData.append( 'tv', data.tv);
         formData.append('minDaysForReservation', data.minDaysForReservation);
         formData.append( 'address', data.address);
+
         const namesAdd = Array.from(imagesToAdd).map((file) => file.name);
         imagesToAdd.forEach((filename) =>{
             formData.append('filesToAdd', filename);
-        })
-        selectedImagesArray.forEach((fileName) =>{
-           formData.append('imagesToDelete', fileName);
         });
-        if (position) {
-            const [latitude, longitude] = position as [number, number]; // Explicitly cast position as a tuple of numbers
-            formData.append('latitude', latitude.toString());
-            formData.append('longitude', longitude.toString());
-        }
+
+        selectedImagesArray.forEach((fileName) =>{
+            formData.append('imagesToDelete', fileName);
+        });
+
+        formData.append('latitude', position[0].toString());
+        formData.append('longitude', position[1].toString());
 
         // console.log(selectedImagesArray);
-        console.log(imagesToAdd);
+        //console.log(imagesToAdd);
         // console.log(namesAdd);
         await agent.Catalog.updateHostResidence(formData);
     }
@@ -174,21 +174,26 @@ export default function MyResidenceEdit(){
                 <CardContent>
                     <Grid container spacing={3} alignItems="flex-start">
                         <Grid item xs={4} md={5}>
-                            <ImageList sx={{ width: 450, height: 500 }} cols={2} rowHeight={164}>
+                            <ImageList sx={{ width: 450, height: 500 }} cols={2}>
                                 {residence.imageURL.map((imageURL, index) => (
-                                    <ImageListItem key={index}>
+                                    <ImageListItem key={index} sx={{ width:225, height:250}}>
                                         <img
                                             src={`${imageURL}?w=164&h=164&fit=crop&auto=format`}
                                             srcSet={`${imageURL}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
                                             loading="lazy"
                                         />
-                                        <label>
-                                            <Checkbox
-                                                checked={selectedImages[imageURL] || false}
-                                                onChange={() => handleCheckboxChange(imageURL)}
-                                            />
-                                            Delete
-                                        </label>
+                                        <ImageListItemBar
+                                            title={
+                                                <label>
+                                                    <Checkbox
+                                                        checked={selectedImages[imageURL] || false}
+                                                        onChange={() => handleCheckboxChange(imageURL)}
+                                                    />
+                                                    Delete
+                                                </label>
+                                            }
+                                            position="below"
+                                        />
                                     </ImageListItem>
                                 ))}
                             </ImageList>
@@ -431,7 +436,7 @@ export default function MyResidenceEdit(){
                                     />
                                 )}
                             />
-                            <InputLabel htmlFor="first-name-input">Profile picture</InputLabel>
+                            <InputLabel htmlFor="first-name-input">Update Residence Images</InputLabel>
                             <input
                                 {...register("files")}
                                 type="file"
