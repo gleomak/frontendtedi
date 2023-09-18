@@ -80,6 +80,8 @@ const Account ={
     getUserDetails:(values : URLSearchParams ) => requests.get('Account/getUserDetails', values),
     editUserProfile:(values: FormData) => requests.postForm('Account/editUserProfile', values),
     getUserResidences:(values: URLSearchParams) => requests.get('Account/getHostResidences', values),
+    getUserMessages:(values: URLSearchParams) => requests.get('Account/getUserMessages', values),
+    postUserMessage:(values: any) => requests.post('Account/postMessage', values),
 }
 
 const Catalog={

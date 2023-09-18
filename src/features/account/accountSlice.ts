@@ -1,16 +1,48 @@
-import {User} from "../../app/models/user";
-import {createAsyncThunk, createSlice, isAnyOf} from "@reduxjs/toolkit";
+import {Message, User} from "../../app/models/user";
+import {createAsyncThunk, createEntityAdapter, createSlice, isAnyOf} from "@reduxjs/toolkit";
 import {FieldValues} from "react-hook-form";
 import agent from "../../app/api/agent";
 import {router} from "../../app/router/Routes";
+import {Metadata} from "../../app/models/metadata";
+import {RootState} from "../../store/configureStore";
+
+
+const messagesAdapter = createEntityAdapter<Message>();
+
 
 interface AccountState{
     user: User | null;
+    status: string;
+    messagesLoaded: boolean,
+    metadata: Metadata | null;
+    pageSize : number,
+    pageNumber : number,
 }
 
-const initialState: AccountState = {
-    user : null
-}
+// const initialState: AccountState = {
+//     user : null,
+//     metadata : null,
+//     status: 'idle',
+//     pageSize : 10,
+//     pageNumber : 1
+// }
+
+export const fetchMessagesAsync = createAsyncThunk<Message[], void, {state:RootState}>(
+    'account/fetchMessagesAsync',
+    async (_,thunkAPI) => {
+        const params = new URLSearchParams();
+        params.append('pageNumber', thunkAPI.getState().account.pageNumber.toString());
+        params.append('pageSize', thunkAPI.getState().account.pageSize.toString());
+        try{
+            const response =  await agent.Account.getUserMessages(params);
+            thunkAPI.dispatch(setMetaDataMessages(response.metadata));
+            return response.items;
+        }catch(error){
+            console.log(error);
+        }
+    }
+)
+
 
 export const signInUser = createAsyncThunk<User,FieldValues>(
     'account/signInUser',
@@ -68,7 +100,14 @@ export const getUserDetails = createAsyncThunk<User>(
 
 export const accountSlice = createSlice({
     name : 'account',
-    initialState,
+    initialState : messagesAdapter.getInitialState<AccountState>({
+        messagesLoaded: false,
+        user : null,
+        metadata : null,
+        status: 'idle',
+        pageSize : 2,
+        pageNumber : 1
+    }),
     reducers:{
         signOut: (state) => {
             state.user = null;
@@ -83,9 +122,28 @@ export const accountSlice = createSlice({
             let claims = JSON.parse(atob(action.payload.token.split('.')[1]));
             let roles = claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
             state.user = {...action.payload, roles: typeof(roles) === 'string'? [roles] : roles};
-        }
+        },
+        setMetaDataMessages:(state, action) =>{
+            state.metadata = action.payload;
+        },
+        setPageNumberMessages: (state, action) => {
+            state.messagesLoaded = false;
+            console.log('edwwww');
+            state.pageNumber = action.payload;
+        },
     },
     extraReducers: (builder =>{
+        builder.addCase(fetchMessagesAsync.pending, (state) => {
+            state.status = 'pendingFetchProducts';
+        });
+        builder.addCase(fetchMessagesAsync.fulfilled, (state, action) =>{
+            messagesAdapter.setAll(state, action.payload);
+            state.status = 'idle';
+            state.messagesLoaded = true;
+        });
+        builder.addCase(fetchMessagesAsync.rejected, (state) =>{
+            state.status = 'idle';
+        });
         builder.addMatcher(isAnyOf(signInUser.fulfilled, fetchCurrentUser.fulfilled), (state, action) => {
             let claims = JSON.parse(atob(action.payload.token.split('.')[1]));
             let roles = claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
@@ -93,8 +151,10 @@ export const accountSlice = createSlice({
         });
         builder.addMatcher(isAnyOf(signInUser.rejected, fetchCurrentUser.rejected, getUserDetails.rejected), (state, action) => {
             console.log(action.payload);
-        })
+        });
     })
 })
 
-export const{signOut,setUser, resignOut} = accountSlice.actions;
+export const messagesSelectors = messagesAdapter.getSelectors((state: RootState) => state.account);
+
+export const{signOut,setUser, resignOut, setMetaDataMessages, setPageNumberMessages} = accountSlice.actions;

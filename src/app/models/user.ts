@@ -19,3 +19,10 @@ export interface Host{
     username: string;
 
 }
+
+export interface Message{
+    id: string;
+    message: string;
+    senderUsername: string;
+    senderImageURL: string;
+}

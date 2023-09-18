@@ -8,6 +8,7 @@ import ResidenceDetails from "../../features/catalog/ResidenceDetails";
 import Login from "../../features/account/Login";
 import Register from "../../features/account/Register";
 import MyProfile from "../../features/account/MyProfile";
+import Messages from "../../features/account/Messages";
 import RequireAuth from "./RequireAuth";
 import CreateReservation from "../../features/catalog/CreateReservation";
 import MyResidences from "../../features/account/MyResidences";
@@ -27,6 +28,7 @@ export const router= createBrowserRouter([
                     {path: 'myResidenceEdit/:id', element: <MyResidenceEdit/>},
                     {path: 'createResidence', element: <CreateResidence/>}
             ]},
+            {path: 'messages', element: <Messages/>},
             {path: '', element: <HomePage/>},
             {path: 'catalog', element: <Catalog/>},
             {path: 'catalog/:id', element: <ResidenceDetails/>},

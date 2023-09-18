@@ -1,13 +1,13 @@
-import {Button, Fade, ListItem, Menu, MenuItem} from "@mui/material";
+import {Button, IconButton, Menu, MenuItem} from "@mui/material";
 import React from "react";
 import {useAppDispatch, useAppSelector} from "../../store/configureStore";
 import {signOut} from "../../features/account/accountSlice";
-import {NavLink} from "react-router-dom";
+import MessageIcon from '@mui/icons-material/Message';
+import {Link, NavLink} from "react-router-dom";
 
 export default function SignedInMenu(){
     const dispatch = useAppDispatch();
     const {user} = useAppSelector(state => state.account);
-
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: any) => {
@@ -19,8 +19,9 @@ export default function SignedInMenu(){
 
     return (
         <>
-
-
+            <IconButton component={Link} to="/messages" color="inherit" >
+                <MessageIcon/>
+            </IconButton>
             <Button
                 color = 'inherit'
                 onClick={handleClick}
@@ -42,6 +43,8 @@ export default function SignedInMenu(){
                         <MenuItem onClick={handleClose}>Create Residence</MenuItem>
                     </NavLink>,
                 ]}
+                <NavLink to={'/myProfile'} ><MenuItem onClick={handleClose}>Profile</MenuItem></NavLink>
+                <MenuItem onClick={() => dispatch(signOut())}>Logout</MenuItem>
             </Menu>
         </>
     );
