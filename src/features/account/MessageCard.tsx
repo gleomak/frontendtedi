@@ -36,6 +36,7 @@ export default function MessageCard({message}:Prop) {
         const formData = new FormData();
         formData.append('messageBody', replyText);
         formData.append('recipientUsername', message.senderUsername);
+        if(message.residenceTitle)formData.append('residenceTitle', message.residenceTitle);
         agent.Account.postUserMessage(formData).then(() => {
             toast.success("Message sent!")})
             .catch(errors => console.log(errors));
@@ -54,7 +55,7 @@ export default function MessageCard({message}:Prop) {
                         <Avatar alt={message.senderUsername} src={message.senderImageURL} />
                     </Grid>
                     <Grid item xs={10}>
-                        <Typography variant="h6">{message.senderUsername}</Typography>
+                        <Typography variant="h6">{message.senderUsername}: {message.residenceTitle}</Typography>
                         <Typography
                             variant="body1"
                             style={{

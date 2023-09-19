@@ -1,10 +1,11 @@
-import {Message, User} from "../../app/models/user";
+import {Message, MessageParams, User} from "../../app/models/user";
 import {createAsyncThunk, createEntityAdapter, createSlice, isAnyOf} from "@reduxjs/toolkit";
 import {FieldValues} from "react-hook-form";
 import agent from "../../app/api/agent";
 import {router} from "../../app/router/Routes";
 import {Metadata} from "../../app/models/metadata";
 import {RootState} from "../../store/configureStore";
+import {ResidenceSearch} from "../../app/models/residence";
 
 
 const messagesAdapter = createEntityAdapter<Message>();
@@ -14,25 +15,17 @@ interface AccountState{
     user: User | null;
     status: string;
     messagesLoaded: boolean,
-    metadata: Metadata | null;
-    pageSize : number,
-    pageNumber : number,
+    metadata: Metadata | null,
+    messageParams: MessageParams;
 }
-
-// const initialState: AccountState = {
-//     user : null,
-//     metadata : null,
-//     status: 'idle',
-//     pageSize : 10,
-//     pageNumber : 1
-// }
 
 export const fetchMessagesAsync = createAsyncThunk<Message[], void, {state:RootState}>(
     'account/fetchMessagesAsync',
     async (_,thunkAPI) => {
         const params = new URLSearchParams();
-        params.append('pageNumber', thunkAPI.getState().account.pageNumber.toString());
-        params.append('pageSize', thunkAPI.getState().account.pageSize.toString());
+        params.append('pageNumber', thunkAPI.getState().account.messageParams.pageNumber.toString());
+        params.append('pageSize', thunkAPI.getState().account.messageParams.pageSize.toString());
+        if(thunkAPI.getState().account.messageParams.searchResidenceName)params.append('residenceTitle', thunkAPI.getState().account.messageParams.searchResidenceName!);
         try{
             const response =  await agent.Account.getUserMessages(params);
             thunkAPI.dispatch(setMetaDataMessages(response.metadata));
@@ -98,6 +91,14 @@ export const getUserDetails = createAsyncThunk<User>(
     }
 )
 
+function initParams(): MessageParams{
+    return{
+        searchResidenceName: null,
+        pageSize : 10,
+        pageNumber : 1
+    }
+}
+
 export const accountSlice = createSlice({
     name : 'account',
     initialState : messagesAdapter.getInitialState<AccountState>({
@@ -105,8 +106,7 @@ export const accountSlice = createSlice({
         user : null,
         metadata : null,
         status: 'idle',
-        pageSize : 2,
-        pageNumber : 1
+        messageParams : initParams(),
     }),
     reducers:{
         signOut: (state) => {
@@ -126,10 +126,16 @@ export const accountSlice = createSlice({
         setMetaDataMessages:(state, action) =>{
             state.metadata = action.payload;
         },
+        setMessageParams:(state, action ) =>{
+            state.messageParams = {...state.messageParams, ...action.payload};
+        },
+        fetchSpecificResidences( state ){
+            state.messagesLoaded  = false;
+            state.messageParams = {...state.messageParams, pageNumber:1};
+        },
         setPageNumberMessages: (state, action) => {
             state.messagesLoaded = false;
-            console.log('edwwww');
-            state.pageNumber = action.payload;
+            state.messageParams = {...state.messageParams, ...action.payload};
         },
     },
     extraReducers: (builder =>{
@@ -157,4 +163,12 @@ export const accountSlice = createSlice({
 
 export const messagesSelectors = messagesAdapter.getSelectors((state: RootState) => state.account);
 
-export const{signOut,setUser, resignOut, setMetaDataMessages, setPageNumberMessages} = accountSlice.actions;
+export const{
+    signOut
+    ,setUser
+    ,resignOut
+    ,setMetaDataMessages
+    ,setPageNumberMessages
+    ,setMessageParams
+    ,fetchSpecificResidences
+    } = accountSlice.actions;

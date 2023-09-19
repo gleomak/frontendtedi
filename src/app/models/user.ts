@@ -23,6 +23,13 @@ export interface Host{
 export interface Message{
     id: string;
     message: string;
+    residenceTitle?: string;
     senderUsername: string;
     senderImageURL: string;
+}
+
+export interface MessageParams{
+    pageNumber: number;
+    pageSize: number;
+    searchResidenceName?: string | null;
 }
