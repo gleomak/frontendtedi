@@ -58,8 +58,6 @@ export const fResidenceAsync = createAsyncThunk<Residence, number>(
 
 function initParams(): ResidenceSearch{
     return{
-        // from: null,
-        // to:null,
         city: null,
         country: null,
         neighborhood: null,

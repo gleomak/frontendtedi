@@ -2,13 +2,23 @@ import {Residence} from "../../app/models/residence";
 import {Button, Card, CardActions, CardContent, CardMedia, IconButton} from "@mui/material";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Typography from "@mui/material/Typography";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import ForumIcon from '@mui/icons-material/Forum';
 import React from "react";
+import {useAppDispatch} from "../../store/configureStore";
+import {setMessageParams} from "./accountSlice";
 
 interface Prop{
     residence : Residence;
 }
 export default function MyResidenceCard({residence}:Prop){
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const HandleOnClick = () =>{
+        dispatch(setMessageParams({searchResidenceName : residence.title}))
+        navigate('/messages')
+    }
+
     return (
         <Card style={{ border: "none", boxShadow: "none" }}>
             <CardMedia
@@ -38,6 +48,11 @@ export default function MyResidenceCard({residence}:Prop){
                     color="error"
                 >
                     <DeleteForeverIcon />
+                </IconButton>
+                <IconButton
+                    onClick={HandleOnClick}
+                >
+                    <ForumIcon/>
                 </IconButton>
             </CardActions>
         </Card>

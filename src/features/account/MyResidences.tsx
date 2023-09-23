@@ -34,7 +34,7 @@ export default function MyResidences(){
            }
            FetchResidences();
        }
-    }, [areResidencesLoaded]);
+    }, [areResidencesLoaded, pageNumber, pageSize]);
 
     return(
         <div>

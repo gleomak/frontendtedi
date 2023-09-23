@@ -1,0 +1,8 @@
+.error_message p {
+    color: #bf1650;
+}
+
+.error_message p::before {
+    display: inline;
+    content: "⚠ ";
+}

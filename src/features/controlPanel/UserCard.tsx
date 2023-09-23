@@ -17,10 +17,10 @@ export default function UserCard({user, onReloadUsers}:Prop) {
 
 
 
-    const handleClick = () =>{
+    const handleClick = async () =>{
         const param = new FormData();
         param.append('username', user.username);
-        agent.Admin.authorizeUser(param).then(() => {
+        await agent.Admin.authorizeUser(param).then(() => {
             toast.success("User in now Authorized")})
             .catch(errors => console.log(errors))
         onReloadUsers();
@@ -33,7 +33,7 @@ export default function UserCard({user, onReloadUsers}:Prop) {
                         <img
                             src={user.pictureURL}
                             style={{ width: "60px", height: "60px" }}
-                        />
+                            alt="Profile"/>
                     ) : (
                         <img
                             src={defaultProfileImageUrl}

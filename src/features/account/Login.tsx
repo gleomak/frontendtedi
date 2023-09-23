@@ -12,8 +12,10 @@ import {Link, useNavigate} from 'react-router-dom';
 import {useState} from "react";
 import agent from "../../app/api/agent";
 import {FieldValue, FieldValues, useForm} from "react-hook-form";
-import {useAppDispatch} from "../../store/configureStore";
+import {useAppDispatch, useAppSelector} from "../../store/configureStore";
 import {setUser, signInUser} from "./accountSlice";
+import {User} from "../../app/models/user";
+import {toast} from "react-toastify";
 
 
 // // TODO remove, this demo shouldn't need to reset the theme.
@@ -26,9 +28,18 @@ export default function Login() {
         formState:{isSubmitting, errors, isValid}} = useForm()
 
     async function submitForm(data:FieldValues){
-        const user = await dispatch(signInUser(data));
-        // dispatch(state => setUser(user));
-        navigate('/catalog');
+        try {
+            const returnData = await dispatch(signInUser(data));
+            const user = returnData.payload as User;
+            if (user.roles?.some(role => role === "Admin"))
+                navigate('/controlPanel');
+            else {
+                navigate('/catalog');
+            }
+        }catch (error){
+            console.log("EEEEEEEEEEEEIIIIIIIIIIIIIIIII"+error);
+        }
+
     }
 
     return (

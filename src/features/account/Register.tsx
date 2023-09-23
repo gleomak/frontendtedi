@@ -14,15 +14,12 @@ import {useAppDispatch} from "../../store/configureStore";
 import agent from "../../app/api/agent";
 import {useState} from "react";
 import {toast} from "react-toastify";
-
-
-// // TODO remove, this demo shouldn't need to reset the theme.
-// const defaultTheme = createTheme();
+import "./Register.css"
 
 export default function Register() {
     const navigate = useNavigate();
-    const{register, handleSubmit, setError,
-        formState:{isSubmitting, errors, isValid}} = useForm({
+    const{register, handleSubmit, setError, watch, getValues,
+        formState:{errors}} = useForm({
         mode: 'onTouched'
     });
 
@@ -64,7 +61,9 @@ export default function Register() {
         formData.append('role', data.role);
         agent.Account.register(formData)
             .then(() => {
-                toast.success('Registration successful, you can now Login!')
+                toast.success('Registration successful, you can now Login!');
+                if(data.role === "Host" || data.role === "Host/Member")
+                    toast.success("Waiting Admin authorization!")
                 navigate('/login');
             })
             .catch(errors => handleApiErrors(errors))
@@ -157,6 +156,19 @@ export default function Register() {
                     error={!!errors.password}
                     helperText = {errors?.password?.message as string}
                 />
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    label="Repeat Password"
+                    type="password"
+                    {...register("password_repeat", { required: true })}
+                />
+                {watch("password_repeat") !== watch("password") &&
+                getValues("password_repeat") ? (
+                    <div className="error_message">
+                        <p>Passwords don't match</p>
+                    </div>
+                ) : null}
                 <InputLabel htmlFor="first-name-input">Profile picture</InputLabel>
                 <Input
                    {...register("file")}

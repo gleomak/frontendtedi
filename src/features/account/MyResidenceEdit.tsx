@@ -258,6 +258,7 @@ export default function MyResidenceEdit(){
                                 fullWidth
                                 margin="normal"
                                 autoFocus
+                                multiline
                                 label="Description"
                                 {...register('description', {required: 'Description is required!'})}
                             />
