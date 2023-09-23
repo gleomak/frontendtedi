@@ -1,7 +1,18 @@
 import Typography from "@mui/material/Typography";
 import {NavLink, useParams} from "react-router-dom";
 import {SetStateAction, useEffect, useState} from "react";
-import {Grid, Button, ImageListItem, ImageList, IconButton, Rating} from "@mui/material";
+import {
+    Grid,
+    Button,
+    ImageListItem,
+    ImageList,
+    IconButton,
+    Rating,
+    Dialog,
+    DialogContent,
+    Box,
+    Divider, TextField
+} from "@mui/material";
 import {Modal} from "@mui/material";
 import { ArrowBackIos as ArrowBackIosIcon, ArrowForwardIos as ArrowForwardIosIcon} from "@mui/icons-material";
 import MessageIcon from '@mui/icons-material/Message';
@@ -15,6 +26,9 @@ import * as React from "react";
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import {Host} from "../../app/models/user";
 import agent from "../../app/api/agent";
+import ThumbsUpDownIcon from '@mui/icons-material/ThumbsUpDown';
+import Avatar from "@mui/material/Avatar";
+import {toast} from "react-toastify";
 
 
 export default function ResidenceDetails() {
@@ -26,6 +40,13 @@ export default function ResidenceDetails() {
     const [host, setHost] = useState<Host>();
     const [position, setPosition] = useState<LatLngExpression | undefined>(undefined);
     const [booleanHost, setHostBoolean] = useState<boolean>(false);
+    const [open, setOpen] = useState(false); // State to control the dialog
+    const [reviewsOpen, setReviewsOpen] = useState(false);
+    const [replyText, setReplyText] = useState('');
+    const [reviewDescriptionText, setReviewDescriptionText] = useState('');
+    const [reviewDescriptionRating, setReviewDescriptionRating] = useState(0);
+    const [createReviewsOpen, setCreateReviewsOpen] = useState(false);
+    const user = useAppSelector(state => state.account.user);
 
     useEffect(() => {
         if (!residence && id) {
@@ -70,6 +91,60 @@ export default function ResidenceDetails() {
     const handleNextImage = () => {
         setSelectedImageIndex(prevIndex => (prevIndex + 1) % residence?.imageURL.length!);
     };
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleReviewsClick = () =>{
+        setReviewsOpen(true);
+    };
+
+    const handleCreateRevClick =() =>{
+        setCreateReviewsOpen(true);
+    }
+
+    const handleCreateReviewClose = () => {
+        setCreateReviewsOpen(false);
+    }
+
+    const handleSend = () => {
+        if (replyText.trim() === '') {
+            // Show a toast notification if replyText is empty
+            toast.error('Please enter a reply message.');
+            return; // Do not proceed with empty reply
+        }
+        const formData = new FormData();
+        formData.append('messageBody', replyText);
+        formData.append('recipientUsername', host?.username!);
+        formData.append('residenceTitle', residence.title);
+        agent.Account.postUserMessage(formData).then(() => {
+            toast.success("Message sent!")})
+            .catch(errors => console.log(errors));
+        handleClose(); // Close the dialog after replying
+    };
+
+    const handleSendReview = () => {
+        if (reviewDescriptionText.trim() === '') {
+            // Show a toast notification if replyText is empty
+            toast.error('Please enter a reply message.');
+            return; // Do not proceed with empty reply
+        }
+        const formData = new FormData();
+        formData.append('description', reviewDescriptionText);
+        formData.append('starRating', reviewDescriptionRating.toString());
+        formData.append('hostName', host?.username!);
+        formData.append('reviewByUser', user?.username!);
+        agent.Account.postUserMessage(formData).then(() => {
+            toast.success("Review sent!")})
+            .catch(errors => console.log(errors));
+        handleCreateReviewClose(); // Close the dialog after replying
+    }
+
 
     return(
         <div className={"mainDiv"}>
@@ -141,24 +216,21 @@ export default function ResidenceDetails() {
                     <div className={"spaceDetails-div"}>
                         <u className={"subDetailsTitle"}>{host!.username}</u>
                         <div className={"landlordDetails"}>
-                            <Grid container spacing={4}>
+                            <Grid container spacing={2} sx={{padding: '5px'}}>
                                 <Grid item xs>
-                                    <div className={"landlordImageContainer"}>
-                                        <img
-                                            src='https://images.unsplash.com/photo-1551963831-b3b1ca40c98e'
-                                            alt='Breakfast'
-                                            loading="lazy"
-                                        />
-                                    </div>
+                                    <Avatar alt={host?.username} src={host?.imageURL} />
                                 </Grid>
-                                <Grid item xs={6} md={4}>
-                                    <div className={"grid2"}>
-                                        <Rating name="no-value" value={null} readOnly/>
+                                <Grid item>
+                                    <div onClick={handleReviewsClick}>
+                                        <Rating name="no-value" value={host?.rating} readOnly />
                                     </div>
                                 </Grid>
                                 <Grid item xs>
-                                    <Button variant="contained" disableElevation>
+                                    <Button variant="contained" disableElevation  sx={{marginBottom: '3px'}} onClick={handleClickOpen}>
                                         <MessageIcon/>
+                                    </Button>
+                                    <Button variant="contained" disableElevation  sx={{marginTop: '3px'}} onClick={handleCreateRevClick}>
+                                        <ThumbsUpDownIcon/>
                                     </Button>
                                 </Grid>
                             </Grid>
@@ -193,6 +265,86 @@ export default function ResidenceDetails() {
                     </IconButton>
                 </div>
             </Modal>
+
+
+            <Dialog
+                open={reviewsOpen}
+                onClose={() => setReviewsOpen(false)}
+                maxWidth={"lg"}
+                fullWidth
+            >
+                <DialogContent>
+                    <div style={{ textAlign: 'center', paddingBottom: '20px' }}>
+                        <Typography variant="h3">Reviews For Host: {host?.username}</Typography>
+                    </div>
+                    <Divider sx={{ marginY: 2 }} />
+                    {host?.hostReviews.map((item, index) =>(
+                        <div key={index} className={"reviewDiv"}>
+                            <Typography variant="h6"> From {item.reviewByUser} :</Typography>
+
+                            <Rating value={item.starRating} readOnly />
+                            <TextField
+                                inputProps={
+                                    { readOnly: true, }
+                                }
+                                fullWidth
+                                multiline
+                                label="Review Description"
+                                value={item.description}
+                            />
+                            <Divider sx={{ marginY: 2 }} />
+                        </div>
+                        ))}
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={createReviewsOpen} onClose={() => setCreateReviewsOpen(false)} maxWidth="md" fullWidth>
+                <DialogContent>
+                    <Typography component="legend">Review Rating</Typography>
+                    <Rating
+                        name="simple-controlled"
+                        value={reviewDescriptionRating}
+                        onChange={(event, newValue) => {
+                            setReviewDescriptionRating(newValue!);
+                        }}
+                    />
+
+                    <Divider sx={{ marginY: 2 }} />
+
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        multiline
+                        label="ReviewDescription"
+                        value={reviewDescriptionText}
+                        onChange={(e) => setReviewDescriptionText(e.target.value)}
+                    />
+
+                    <Divider sx={{ marginY: 2 }} />
+
+                    <Button variant="contained" color="primary" onClick={handleSendReview}>
+                        Submit Review
+                    </Button>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+                <DialogContent>
+                    <Typography variant="h6"> From {user?.username}, To {host?.username} | {residence.title} :</Typography>
+                    <Divider sx={{ marginY: 2 }} />
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Your Message"
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                    />
+                    <Divider sx={{ marginY: 1 }} />
+                    <Button variant="contained" color="primary" onClick={handleSend}>
+                        Send Message
+                    </Button>
+                </DialogContent>
+            </Dialog>
         </div>
 
     )

@@ -13,11 +13,19 @@ export interface User{
     userId : string;
 }
 
+export interface HostReview{
+    id: number;
+    description: string;
+    starRating: number;
+    userId: string;
+    reviewByUser:string;
+}
+
 export interface Host{
     rating: number;
     imageURL: string;
     username: string;
-
+    hostReviews: HostReview[];
 }
 
 export interface Message{
