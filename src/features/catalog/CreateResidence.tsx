@@ -16,8 +16,8 @@ import "leaflet/dist/leaflet.css"
 import { LatLngExpression } from 'leaflet';
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import {Icon} from 'leaflet';
-import {useAppSelector} from "../../store/configureStore";
-import {residencesSelectors} from "./catalogSlice";
+import {useAppDispatch, useAppSelector} from "../../store/configureStore";
+import {residencesSelectors, setResidencesLoaded} from "./catalogSlice";
 import agent from "../../app/api/agent";
 
 
@@ -31,6 +31,7 @@ L.Icon.Default.mergeOptions({
 export default function CreateResidence() {
 
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const{register, handleSubmit, setError,
         formState:{isSubmitting, errors, isValid}} = useForm({
         mode: 'onTouched'
@@ -94,7 +95,8 @@ export default function CreateResidence() {
             formData.append('files', filename);
         })
         formData.append('userId', user?.id!);
-        await agent.Catalog.createResidence(formData);
+        await agent.Catalog.createResidence(formData).then(() => dispatch(setResidencesLoaded()));
+        navigate('/catalog')
     }
 
     const [imagesToAdd, setImagesToAdd] = useState<File[]>([]);

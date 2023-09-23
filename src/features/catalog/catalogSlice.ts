@@ -104,7 +104,15 @@ export const catalogSlice = createSlice({
         resetResidenceParams: (state) => {
             state.residencesLoaded = false;
             state.residenceParams = initParams()
-        }
+        },
+        setResidence: (state, action) =>{
+            residencesAdapter.upsertOne(state, action.payload);
+            state.residencesLoaded = false;
+        },
+        removeResidence: (state, action) =>{
+            residencesAdapter.removeOne(state , action.payload);
+            state.residencesLoaded = false;
+}
     },
     extraReducers: (builder => {
         builder.addCase(fetchResidencesAsync.pending, (state) => {
@@ -138,4 +146,6 @@ export const {setResidenceParams,
     setFromDate,
     setResidencesLoaded,
     setMetaData,
-    setPageNumber} = catalogSlice.actions;
+    setPageNumber,
+    setResidence,
+    removeResidence,} = catalogSlice.actions;

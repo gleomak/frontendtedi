@@ -28,7 +28,9 @@ export const router= createBrowserRouter([
                     {path: 'myResidenceEdit/:id', element: <MyResidenceEdit/>},
                     {path: 'createResidence', element: <CreateResidence/>}
             ]},
-            {path: 'messages', element: <Messages/>},
+            {element: <RequireAuth roles={['Admin','Member','Host']} />, children: [
+                    {path: 'messages', element: <Messages/>},
+            ]},
             {path: '', element: <HomePage/>},
             {path: 'catalog', element: <Catalog/>},
             {path: 'catalog/:id', element: <ResidenceDetails/>},

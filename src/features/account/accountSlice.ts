@@ -25,7 +25,8 @@ export const fetchMessagesAsync = createAsyncThunk<Message[], void, {state:RootS
         const params = new URLSearchParams();
         params.append('pageNumber', thunkAPI.getState().account.messageParams.pageNumber.toString());
         params.append('pageSize', thunkAPI.getState().account.messageParams.pageSize.toString());
-        if(thunkAPI.getState().account.messageParams.searchResidenceName)params.append('residenceTitle', thunkAPI.getState().account.messageParams.searchResidenceName!);
+        if(thunkAPI.getState().account.messageParams.searchResidenceName)
+            params.append('residenceTitle', thunkAPI.getState().account.messageParams.searchResidenceName!);
         try{
             const response =  await agent.Account.getUserMessages(params);
             thunkAPI.dispatch(setMetaDataMessages(response.metadata));
@@ -95,7 +96,7 @@ export const getUserDetails = createAsyncThunk<User>(
 function initParams(): MessageParams{
     return{
         searchResidenceName: null,
-        pageSize : 10,
+        pageSize : 9,
         pageNumber : 1
     }
 }

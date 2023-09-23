@@ -1,6 +1,6 @@
 import {useAppDispatch, useAppSelector} from "../../store/configureStore";
-import {useParams} from "react-router-dom";
-import {fResidenceAsync, residencesSelectors} from "../catalog/catalogSlice";
+import {useNavigate, useParams} from "react-router-dom";
+import {fResidenceAsync, residencesSelectors, setResidence} from "../catalog/catalogSlice";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import {Controller, FieldValues, useForm} from "react-hook-form";
@@ -24,10 +24,12 @@ import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
 import L, {Icon} from "leaflet";
 import { LatLngExpression } from 'leaflet';
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
+import {Residence} from "../../app/models/residence";
 
 export default function MyResidenceEdit(){
     const dispatch = useAppDispatch();
     const {id} = useParams<{ id: string }>();
+    const navigate = useNavigate();
     const residence = useAppSelector(state => residencesSelectors.selectById(state, id!));
     const {status: residenceStatus} = useAppSelector(state => state.catalog);
     const [isLoading, setIsLoading] = useState(true);
@@ -165,7 +167,9 @@ export default function MyResidenceEdit(){
         // console.log(selectedImagesArray);
         //console.log(imagesToAdd);
         // console.log(namesAdd);
-        await agent.Catalog.updateHostResidence(formData);
+        const response : Residence = await agent.Catalog.updateHostResidence(formData);
+        dispatch(setResidence(response));
+        navigate('/myResidences');
     }
 
     return(

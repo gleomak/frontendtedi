@@ -89,9 +89,10 @@ const Catalog={
     details: (id: number) => requests.get(`Residence/${id}`),
     postReservation: (values: any) => requests.post('Reservation/postReservation', values),
     getReservations: (params: URLSearchParams) => requests.get('/Reservation/getReservationsForResidence', params),
-    updateHostResidence:(values: FormData) => requests.postForm('Residence/updateResidence', values),
+    updateHostResidence:(values: FormData) => requests.postForm('/Residence/updateResidence', values),
     createResidence:(values: FormData) => requests.postForm('/Residence/createResidence', values),
-    getHostInfo:(params: URLSearchParams) => requests.get('Account/getHost', params)
+    getHostInfo:(params: URLSearchParams) => requests.get('Account/getHost', params),
+    deleteResidence:(id: number) => requests.delete(`/Residence/${id}`),
 }
 
 

@@ -26,7 +26,7 @@ export default function Messages() {
     const {messagesLoaded, metadata, messageParams} = useAppSelector(state => state.account);
 
     useEffect(()=>{
-        dispatch(fetchMessagesAsync());
+        // dispatch(fetchMessagesAsync());
         // Fetch messages every 10 seconds
         const intervalId = setInterval(() => {
             dispatch(fetchMessagesAsync());
@@ -49,28 +49,33 @@ export default function Messages() {
                     fullWidth
                     variant="outlined"
                     label="Search Residence Name"
-                    value={messageParams.searchResidenceName}
+                    value={messageParams.searchResidenceName || ''}
                     onChange={(e) => dispatch(setMessageParams({searchResidenceName : e.target.value}))}
                 />
                 <Divider orientation="vertical" flexItem/>
                 <IconButton onClick={() => dispatch(fetchSpecificResidences())}><SearchIcon/></IconButton>
             </div>
-                <Grid container spacing={4}>
-                    <Grid item xs={12}>
-                        <Grid container spacing={8} >
-                            {messages.map(message => (
-                                <Grid item xs={4} key={message.id}>
-                                    <MessageCard key={message.id} message={message} />
+                {messages.length > 0 ? (
+
+                    <Grid container spacing={4}>
+                        <Grid item xs={12}>
+                                <Grid container spacing={8} >
+
+                                    {messages.map(message => (
+                                        <Grid item xs={4} key={message.id}>
+                                            <MessageCard key={message.id} message={message} />
+                                        </Grid>
+                                    ))}
                                 </Grid>
-                            ))}
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Grid container justifyContent="center" alignItems="center">
+                                <AppPagination metadata={metadata} onPageChange={(page: number) => dispatch(setPageNumberMessages({pageNumber: page}))} />
+                            </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        <Grid container justifyContent="center" alignItems="center">
-                            <AppPagination metadata={metadata} onPageChange={(page: number) => dispatch(setPageNumberMessages(page))} />
-                        </Grid>
-                    </Grid>
-                </Grid>
+                ) : ( <h2>No Messages...</h2>
+                )}
         </div>
     )
 }

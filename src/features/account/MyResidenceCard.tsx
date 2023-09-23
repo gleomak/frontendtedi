@@ -7,16 +7,25 @@ import ForumIcon from '@mui/icons-material/Forum';
 import React from "react";
 import {useAppDispatch} from "../../store/configureStore";
 import {setMessageParams} from "./accountSlice";
+import agent from "../../app/api/agent";
+import {removeResidence} from "../catalog/catalogSlice";
 
 interface Prop{
     residence : Residence;
+    reloadResidences: () => void;
 }
-export default function MyResidenceCard({residence}:Prop){
+export default function MyResidenceCard({residence, reloadResidences}:Prop){
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const HandleOnClick = () =>{
+    const HandleOnClickMessages = () =>{
         dispatch(setMessageParams({searchResidenceName : residence.title}))
         navigate('/messages')
+    }
+
+    const  HandleOnClickDelete = async() =>{
+        await agent.Catalog.deleteResidence(residence.id).then(() => dispatch(removeResidence(residence.id)));
+        // navigate('/myResidences')
+        reloadResidences();
     }
 
     return (
@@ -46,11 +55,12 @@ export default function MyResidenceCard({residence}:Prop){
                 <IconButton
                     aria-label="delete product"
                     color="error"
+                    onClick={HandleOnClickDelete}
                 >
                     <DeleteForeverIcon />
                 </IconButton>
                 <IconButton
-                    onClick={HandleOnClick}
+                    onClick={HandleOnClickMessages}
                 >
                     <ForumIcon/>
                 </IconButton>
