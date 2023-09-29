@@ -93,6 +93,8 @@ const Catalog={
     createResidence:(values: FormData) => requests.postForm('/Residence/createResidence', values),
     getHostInfo:(params: URLSearchParams) => requests.get('Account/getHost', params),
     deleteResidence:(id: number) => requests.delete(`/Residence/${id}`),
+    getResidencesXML:() => requests.get('/Residence/getDataXML'),
+    getResidencesJSON:() => requests.get('/Residence/getDataJSON'),
 }
 
 

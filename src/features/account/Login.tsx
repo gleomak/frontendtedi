@@ -8,7 +8,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {Paper} from "@mui/material";
-import {Link, useNavigate} from 'react-router-dom';
+import {Link, useLocation, useNavigate} from 'react-router-dom';
 import {useState} from "react";
 import agent from "../../app/api/agent";
 import {FieldValue, FieldValues, useForm} from "react-hook-form";
@@ -23,6 +23,7 @@ import {toast} from "react-toastify";
 
 export default function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useAppDispatch();
     const{register, handleSubmit,
         formState:{isSubmitting, errors, isValid}} = useForm()
@@ -30,14 +31,20 @@ export default function Login() {
     async function submitForm(data:FieldValues){
         try {
             const returnData = await dispatch(signInUser(data));
-            const user = returnData.payload as User;
-            if (user.roles?.some(role => role === "Admin"))
-                navigate('/controlPanel');
-            else {
-                navigate('/catalog');
+            if(signInUser.fulfilled.match(returnData)){
+                console.log("in");
+                const user = returnData.payload as User;
+                console.log(returnData);
+                if (user.roles?.some(role => role === "Admin"))
+                    navigate('/controlPanel');
+                else{
+                    navigate(location.state?.from ||'/catalog');
+                }
+            }else if(signInUser.rejected.match(returnData)) {
+                console.log("inV2");
             }
         }catch (error){
-            console.log("EEEEEEEEEEEEIIIIIIIIIIIIIIIII"+error);
+            console.log("Errors"+error);
         }
 
     }

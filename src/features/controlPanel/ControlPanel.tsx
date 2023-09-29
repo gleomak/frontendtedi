@@ -25,6 +25,23 @@ export default function ControlPanel(){
         setSelectedFormat(event.target.value);
     };
 
+
+    const handleResidencesClick = async() =>{
+        let response = (selectedFormat === 'JSON') ? await agent.Catalog.getResidencesXML() : await agent.Catalog.getResidencesJSON();
+        let blob = (selectedFormat === 'JSON') ? new Blob([response.data], { type: 'application/json' }) : new Blob([response.data], { type: 'application/xml' });
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a temporary <a> element to trigger the download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = (selectedFormat === 'JSON') ? 'Residences.json' : 'Residences.xml'; // Set the filename
+        document.body.appendChild(a);
+        a.click();
+
+        // Clean up the blob and URL
+        window.URL.revokeObjectURL(url);
+    }
+
     useEffect(() => {
         setAreUsersLoaded(false);
     }, [pageNumber]);
@@ -71,7 +88,7 @@ export default function ControlPanel(){
                                     </Select>
                                 </Grid>
                                 <Grid item xs={2.5}>
-                                    <Button variant="contained" color="primary" fullWidth>
+                                    <Button variant="contained" color="primary" onClick={handleResidencesClick}fullWidth>
                                         Residences
                                     </Button>
                                 </Grid>

@@ -6,6 +6,7 @@ import {router} from "../../app/router/Routes";
 import {Metadata} from "../../app/models/metadata";
 import {RootState} from "../../store/configureStore";
 import {ResidenceSearch} from "../../app/models/residence";
+import {toast} from "react-toastify";
 
 
 const messagesAdapter = createEntityAdapter<Message>();
@@ -49,6 +50,7 @@ export const signInUser = createAsyncThunk<User,FieldValues>(
             return user;
         }
         catch (error: any){
+            toast.error('Invalid credentials. Please try again.');
             return thunkApi.rejectWithValue({error: error.data});
         }
     }

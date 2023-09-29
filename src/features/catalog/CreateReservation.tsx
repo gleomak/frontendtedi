@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import {Navigate, useLocation, useNavigate, useParams} from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../store/configureStore";
 import { fResidenceAsync, residencesSelectors } from "./catalogSlice";
 import { DateRangePicker } from "react-date-range";
@@ -11,9 +11,12 @@ import {toFormData} from "axios";
 import agent from "../../app/api/agent";
 import {Reservation} from "../../app/models/reservation";
 import {ReservationFromTo} from "../../app/models/residence";
+import {toast} from "react-toastify";
 
 export default function CreateReservation() {
     const dispatch = useAppDispatch();
+    const location = useLocation();
+    const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const residence = useAppSelector((state) =>
         residencesSelectors.selectById(state, id!)
@@ -95,7 +98,7 @@ export default function CreateReservation() {
         return formattedDate;
     }
 
-    const handleClick=()=>{
+    const handleClick = async()=>{
         const formData=new FormData();
         const start = selectedDateRange?.startDate.toLocaleDateString('en-US', {
             year: 'numeric',
@@ -112,7 +115,15 @@ export default function CreateReservation() {
         formData.append('userId', user?.id.toString()!);
         formData.append('residenceId', residence.id.toString());
 
-        dispatch(()=> agent.Catalog.postReservation(formData));
+        if (!user) {
+            toast.error('You have to Sign In first!');
+            return navigate('/login', { state: { from: location } });
+        }else if (user.roles && !user.roles.includes('Member')) {
+            toast.error('Not authorized to create reservations!');
+            return;
+        }
+        await dispatch(()=> agent.Catalog.postReservation(formData));
+        navigate('/catalog');
     }
 
     return (
