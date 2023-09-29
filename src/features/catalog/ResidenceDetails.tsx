@@ -1,5 +1,5 @@
 import Typography from "@mui/material/Typography";
-import {NavLink, useParams} from "react-router-dom";
+import {NavLink, useNavigate, useParams} from "react-router-dom";
 import {SetStateAction, useEffect, useState} from "react";
 import {
     Grid,
@@ -47,6 +47,7 @@ export default function ResidenceDetails() {
     const [reviewDescriptionRating, setReviewDescriptionRating] = useState(0);
     const [createReviewsOpen, setCreateReviewsOpen] = useState(false);
     const user = useAppSelector(state => state.account.user);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!residence && id) {
@@ -128,20 +129,16 @@ export default function ResidenceDetails() {
         handleClose(); // Close the dialog after replying
     };
 
-    const handleSendReview = () => {
-        if (reviewDescriptionText.trim() === '') {
-            // Show a toast notification if replyText is empty
-            toast.error('Please enter a reply message.');
-            return; // Do not proceed with empty reply
-        }
+    const handleSendReview = async () => {
         const formData = new FormData();
         formData.append('description', reviewDescriptionText);
         formData.append('starRating', reviewDescriptionRating.toString());
         formData.append('hostName', host?.username!);
         formData.append('reviewByUser', user?.username!);
-        agent.Account.postUserMessage(formData).then(() => {
+        await agent.Account.postLandlordReview(formData).then(() => {
             toast.success("Review sent!")})
             .catch(errors => console.log(errors));
+        navigate('/catalog');
         handleCreateReviewClose(); // Close the dialog after replying
     }
 

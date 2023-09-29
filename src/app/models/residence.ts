@@ -3,6 +3,12 @@ export interface ReservationFromTo{
     to: string;
 }
 
+export interface ResidenceReview{
+    residenceId:            string;
+    starRating:             string;
+    description:            string;
+}
+
 export interface Residence {
     id:                    number;
     title:                 string;
@@ -33,6 +39,7 @@ export interface Residence {
     imageURL:              string[];
     reservationFromTo:     ReservationFromTo[];
     userId:                string;
+    reviews:                ResidenceReview[];
 }
 
 export interface ResidenceSearch{

@@ -82,6 +82,8 @@ const Account ={
     getUserResidences:(values: URLSearchParams) => requests.get('Account/getHostResidences', values),
     getUserMessages:(values: URLSearchParams) => requests.get('Account/getUserMessages', values),
     postUserMessage:(values: any) => requests.post('Account/postMessage', values),
+    postLandlordReview:(values: FormData) => requests.postForm('Account/postLandlordReview', values)
+
 }
 
 const Catalog={
@@ -95,6 +97,7 @@ const Catalog={
     deleteResidence:(id: number) => requests.delete(`/Residence/${id}`),
     getResidencesXML:() => requests.get('/Residence/getDataXML'),
     getResidencesJSON:() => requests.get('/Residence/getDataJSON'),
+    createResidenceReview:(values: FormData) => requests.postForm('/Residence/createResidenceReview', values)
 }
 
 
