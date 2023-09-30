@@ -1,10 +1,23 @@
-import {Button, Card, CardActions, CardContent, CardMedia} from "@mui/material";
+import {Button, Card, CardActions, CardContent, CardMedia, Grid, Rating} from "@mui/material";
 import Typography from "@mui/material/Typography";
-import {ReservationFromTo, Residence} from "../../app/models/residence";
+import {ReservationFromTo, Residence, ResidenceReview} from "../../app/models/residence";
 import {Link} from "react-router-dom";
+import * as React from "react";
 
 interface Prop{
     residence : Residence;
+}
+
+const getResReviewRatingAverage = (reviews: ResidenceReview[]): number =>{
+    if(reviews.length ===0){
+        return 0;
+    }
+    let totalStarRating = 0;
+    reviews.forEach((review)=>{
+        totalStarRating+=(+review.starRating);
+    });
+    const averageStarRating = totalStarRating / reviews.length;
+    return averageStarRating;
 }
 export default function ResidenceCard({residence}:Prop){
     return (
@@ -19,11 +32,24 @@ export default function ResidenceCard({residence}:Prop){
                 {residence.title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    {residence.city}, {residence.neighborhood}
+                    {residence.residenceType}
                 </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    Cost/Night: {residence.costPerNight}€
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    Number of Beds: {residence.numOfBeds}
+                </Typography>
+                <Grid container spacing={1} sx={{paddingTop:'10px'}}>
+                    <Grid>
+                        <Rating name="no-value" value={getResReviewRatingAverage(residence.reviewss)} readOnly />
+                    </Grid>
+                    <Grid>
+                        <a> ( {residence.reviewss.length} )</a>
+                    </Grid>
+                </Grid>
             </CardContent>
             <CardActions>
-                <Button size="small">Share</Button>
                 <Button component={Link} to={`/catalog/${residence.id}`} size="small">Learn More</Button>
             </CardActions>
         </Card>

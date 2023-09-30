@@ -17,7 +17,7 @@ import {Modal} from "@mui/material";
 import { ArrowBackIos as ArrowBackIosIcon, ArrowForwardIos as ArrowForwardIosIcon} from "@mui/icons-material";
 import MessageIcon from '@mui/icons-material/Message';
 import {useAppDispatch, useAppSelector} from "../../store/configureStore";
-import {fResidenceAsync, residencesSelectors} from "./catalogSlice";
+import {fResidenceAsync, residencesSelectors, setResidencesLoaded} from "./catalogSlice";
 import "./ResidenceDetails.css";
 import "./Map.css";
 import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
@@ -29,6 +29,7 @@ import agent from "../../app/api/agent";
 import ThumbsUpDownIcon from '@mui/icons-material/ThumbsUpDown';
 import Avatar from "@mui/material/Avatar";
 import {toast} from "react-toastify";
+import {ResidenceReview} from "../../app/models/residence";
 
 
 export default function ResidenceDetails() {
@@ -42,9 +43,13 @@ export default function ResidenceDetails() {
     const [booleanHost, setHostBoolean] = useState<boolean>(false);
     const [open, setOpen] = useState(false); // State to control the dialog
     const [reviewsOpen, setReviewsOpen] = useState(false);
+    const [resreviewsOpen, setResReviewsOpen] = useState(false);
+    const [createresreviewsOpen, setCreateResReviewsOpen] = useState(false);
     const [replyText, setReplyText] = useState('');
     const [reviewDescriptionText, setReviewDescriptionText] = useState('');
     const [reviewDescriptionRating, setReviewDescriptionRating] = useState(0);
+    const [resreviewDescriptionText, setResReviewDescriptionText] = useState('');
+    const [resreviewDescriptionRating, setResReviewDescriptionRating] = useState(0);
     const [createReviewsOpen, setCreateReviewsOpen] = useState(false);
     const user = useAppSelector(state => state.account.user);
     const navigate = useNavigate();
@@ -107,11 +112,23 @@ export default function ResidenceDetails() {
 
     const handleCreateRevClick =() =>{
         setCreateReviewsOpen(true);
-    }
+    };
+
+    const handleResReviewsClick = () =>{
+        setResReviewsOpen(true);
+    };
+
+    const handleResCreateRevClick = () =>{
+        setCreateResReviewsOpen(true);
+    };
 
     const handleCreateReviewClose = () => {
         setCreateReviewsOpen(false);
-    }
+    };
+
+    const handleCreateResReviewClose = () => {
+        setCreateResReviewsOpen(false);
+    };
 
     const handleSend = () => {
         if (replyText.trim() === '') {
@@ -140,6 +157,32 @@ export default function ResidenceDetails() {
             .catch(errors => console.log(errors));
         navigate('/catalog');
         handleCreateReviewClose(); // Close the dialog after replying
+    };
+
+    const handleSendResReview = async () => {
+        const formData = new FormData();
+        formData.append('description', resreviewDescriptionText);
+        formData.append('starRating', resreviewDescriptionRating.toString());
+        formData.append('username', user?.username!);
+        formData.append("residenceId", residence.id.toString());
+        await agent.Catalog.createResidenceReview(formData).then(()=>{
+            toast.success("Review sent!")})
+            .catch(errors => console.log(errors));
+        dispatch(setResidencesLoaded());
+        navigate('/catalog');
+        handleCreateResReviewClose(); // Close the dialog after replying
+    }
+
+    const getResReviewRatingAverage = (reviews: ResidenceReview[]): number =>{
+        if(reviews.length ===0){
+            return 0;
+        }
+        let totalStarRating = 0;
+        reviews.forEach((review)=>{
+            totalStarRating+=(+review.starRating);
+        });
+        const averageStarRating = totalStarRating / reviews.length;
+        return averageStarRating;
     }
 
 
@@ -205,8 +248,17 @@ export default function ResidenceDetails() {
                     <div className={"spaceDetails-div"}>
                         <u className={"subDetailsTitle"}>Residence Reviews</u>
                         <div className={"landlordDetails"}>
-                            <Grid container spacing={1}>
-                                <Rating name="no-value" value={null} readOnly/>
+                            <Grid container spacing={4} sx={{padding:'5px'}}>
+                                <Grid item>
+                                    <div onClick={handleResReviewsClick}>
+                                        <Rating name="no-value" value={getResReviewRatingAverage(residence.reviewss)} readOnly />
+                                    </div>
+                                </Grid>
+                                <Grid item>
+                                    <Button variant="contained" disableElevation  sx={{marginTop: '3px'}} onClick={handleResCreateRevClick}>
+                                        <ThumbsUpDownIcon/>
+                                    </Button>
+                                </Grid>
                             </Grid>
                         </div>
                     </div>
@@ -295,6 +347,67 @@ export default function ResidenceDetails() {
                 </DialogContent>
             </Dialog>
 
+            <Dialog
+                open={resreviewsOpen}
+                onClose={() => setResReviewsOpen(false)}
+                maxWidth={"lg"}
+                fullWidth
+            >
+                <DialogContent>
+                    <div style={{ textAlign: 'center', paddingBottom: '20px' }}>
+                        <Typography variant="h3">Reviews For Residence: {residence?.title}</Typography>
+                    </div>
+                    <Divider sx={{ marginY: 2 }} />
+                    {residence?.reviewss.map((item, index) =>(
+                        <div key={index} className={"reviewDiv"}>
+                            <Typography variant="h6"> From {item.username} :</Typography>
+
+                            <Rating value={+item.starRating} readOnly />
+                            <TextField
+                                inputProps={
+                                    { readOnly: true, }
+                                }
+                                fullWidth
+                                multiline
+                                label="Review Description"
+                                value={item.description}
+                            />
+                            <Divider sx={{ marginY: 2 }} />
+                        </div>
+                    ))}
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={createresreviewsOpen} onClose={() => setCreateResReviewsOpen(false)} maxWidth="md" fullWidth>
+                <DialogContent>
+                    <Typography component="legend">Review Rating</Typography>
+                    <Rating
+                        name="simple-controlled"
+                        value={resreviewDescriptionRating}
+                        onChange={(event, newValue) => {
+                            setResReviewDescriptionRating(newValue!);
+                        }}
+                    />
+
+                    <Divider sx={{ marginY: 2 }} />
+
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        multiline
+                        label="ReviewDescription"
+                        value={resreviewDescriptionText}
+                        onChange={(e) => setResReviewDescriptionText(e.target.value)}
+                    />
+
+                    <Divider sx={{ marginY: 2 }} />
+
+                    <Button variant="contained" color="primary" onClick={handleSendResReview}>
+                        Submit Review
+                    </Button>
+                </DialogContent>
+            </Dialog>
+
             <Dialog open={createReviewsOpen} onClose={() => setCreateReviewsOpen(false)} maxWidth="md" fullWidth>
                 <DialogContent>
                     <Typography component="legend">Review Rating</Typography>
@@ -343,6 +456,5 @@ export default function ResidenceDetails() {
                 </DialogContent>
             </Dialog>
         </div>
-
     )
 }
