@@ -8,6 +8,7 @@ import UserCard from "./UserCard";
 import Button from "@mui/material/Button";
 import AppPagination from "../../app/components/AppPagination";
 import LoadingComponent from "../../app/layout/LoadingComponent";
+import axios from "axios";
 
 export default function ControlPanel(){
     const [users, setUsers] = useState<User[]>([]);
@@ -27,19 +28,28 @@ export default function ControlPanel(){
 
 
     const handleResidencesClick = async() =>{
-        let response = (selectedFormat === 'JSON') ? await agent.Catalog.getResidencesXML() : await agent.Catalog.getResidencesJSON();
-        let blob = (selectedFormat === 'JSON') ? new Blob([response.data], { type: 'application/json' }) : new Blob([response.data], { type: 'application/xml' });
-        const url = window.URL.createObjectURL(blob);
+        try {
+            // Make an Axios GET request to your backend endpoint
+            const response = await axios.get('/Residence/getDataJSON', {
+                responseType: 'blob', // Treat response as binary data
+            });
 
-        // Create a temporary <a> element to trigger the download
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = (selectedFormat === 'JSON') ? 'Residences.json' : 'Residences.xml'; // Set the filename
-        document.body.appendChild(a);
-        a.click();
+            // Create a blob URL for the downloaded file
+            const blob = new Blob([response.data], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
 
-        // Clean up the blob and URL
-        window.URL.revokeObjectURL(url);
+            // Create a temporary <a> element to trigger the download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Residences.json'; // Set the filename
+            document.body.appendChild(a);
+            a.click();
+
+            // Clean up the blob and URL
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading XML file:', error);
+        }
     }
 
     useEffect(() => {

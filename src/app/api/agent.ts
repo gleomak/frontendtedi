@@ -6,7 +6,7 @@ import {toast} from "react-toastify";
 
 const sleep = () => new Promise(resolve => setTimeout(resolve, 500))
 
-axios.defaults.baseURL = 'http://localhost:5000/api/';
+axios.defaults.baseURL = 'https://localhost:44329/api/';
 const responseBody = (response: AxiosResponse) => response.data;
 
 axios.interceptors.request.use(config => {
