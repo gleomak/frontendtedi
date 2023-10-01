@@ -1,8 +1,9 @@
 import {createAsyncThunk, createEntityAdapter, createSlice} from "@reduxjs/toolkit";
 import {Residence, ResidenceSearch} from "../../app/models/residence";
 import agent from "../../app/api/agent";
-import {RootState} from "../../store/configureStore";
+import {RootState, useAppSelector} from "../../store/configureStore";
 import {Metadata} from "../../app/models/metadata";
+import { useSelector } from 'react-redux';
 
 const residencesAdapter = createEntityAdapter<Residence>();
 
@@ -79,8 +80,11 @@ export const fetchResidencesAsync = createAsyncThunk<Residence[], void, {state:R
     async (_,thunkAPI) => {
         const {params, isTrue} = getAxiosParams(thunkAPI.getState().catalog.residenceParams, true)
         console.log(isTrue);
+        const state = thunkAPI.getState();
+        const user = state.account.user;
+        console.log("AAAAAAAAAAAAAAA")
         try{
-            const response = (!isTrue) ? await agent.Catalog.list(params) : await agent.Catalog.getRecommendationResidences(params);
+            const response = (!isTrue || user == null) ? await agent.Catalog.list(params) : await agent.Catalog.getRecommendationResidences(params);
             thunkAPI.dispatch(setMetaData(response.metadata));
             return response.items;
         }catch(error){
