@@ -13,30 +13,74 @@ interface ResidenceState{
     metadata: Metadata | null;
 }
 
-function getAxiosParams(residencePrams: ResidenceSearch){
+function getAxiosParams(residencePrams: ResidenceSearch, isTrue: boolean){
     const params = new URLSearchParams();
     params.append('pageNumber', residencePrams.pageNumber.toString());
     params.append('pageSize', residencePrams.pageSize.toString());
-    if(residencePrams.from) params.append('from', residencePrams.from.toString());
-    if(residencePrams.to) params.append('to', residencePrams.to.toString());
-    if(residencePrams.city) params.append('city', residencePrams.city.toString());
-    if(residencePrams.country) params.append('country', residencePrams.country.toString());
-    if(residencePrams.neighborhood) params.append('neighborhood', residencePrams.neighborhood.toString());
-    if(residencePrams.numOfPeople) params.append('numOfPeople', residencePrams.numOfPeople.toString());
-    if(residencePrams.internet) params.append('internet', residencePrams.internet.toString());
-    if(residencePrams.tv) params.append('tv', residencePrams.tv.toString());
-    if(residencePrams.kitchen) params.append('kitchen', residencePrams.kitchen.toString());
-    if(residencePrams.aircondition) params.append('aircondition', residencePrams.aircondition.toString());
-    if(residencePrams.parkingSpot) params.append('parkingSpot', residencePrams.parkingSpot.toString());
-    return params;
+    if(residencePrams.from) {
+        params.append('from', residencePrams.from.toString());
+        isTrue = false;
+    }
+    if(residencePrams.to) {
+        params.append('to', residencePrams.to.toString());
+        isTrue = false;
+
+    }
+    if(residencePrams.city) {
+        params.append('city', residencePrams.city.toString());
+        isTrue = false;
+
+    }
+    if(residencePrams.country) {
+        params.append('country', residencePrams.country.toString());
+        isTrue = false;
+
+    }
+    if(residencePrams.neighborhood) {
+        params.append('neighborhood', residencePrams.neighborhood.toString());
+        isTrue = false;
+
+    }
+    if(residencePrams.numOfPeople) {
+        params.append('numOfPeople', residencePrams.numOfPeople.toString());
+        isTrue = false;
+
+    }
+    if(residencePrams.internet) {
+        params.append('internet', residencePrams.internet.toString());
+        isTrue = false;
+
+    }
+    if(residencePrams.tv) {
+        params.append('tv', residencePrams.tv.toString());
+        isTrue = false;
+
+    }
+    if(residencePrams.kitchen) {
+        params.append('kitchen', residencePrams.kitchen.toString());
+        isTrue = false;
+
+    }
+    if(residencePrams.aircondition) {
+        params.append('aircondition', residencePrams.aircondition.toString());
+        isTrue = false;
+
+    }
+    if(residencePrams.parkingSpot) {
+        params.append('parkingSpot', residencePrams.parkingSpot.toString());
+        isTrue = false;
+
+    }
+    return {params, isTrue};
 }
 
 export const fetchResidencesAsync = createAsyncThunk<Residence[], void, {state:RootState}>(
     'residence/fetchResidencesAsync',
     async (_,thunkAPI) => {
-        const params = getAxiosParams(thunkAPI.getState().catalog.residenceParams)
+        const {params, isTrue} = getAxiosParams(thunkAPI.getState().catalog.residenceParams, true)
+        console.log(isTrue);
         try{
-            const response =  await agent.Catalog.list(params);
+            const response = (!isTrue) ? await agent.Catalog.list(params) : await agent.Catalog.getRecommendationResidences(params);
             thunkAPI.dispatch(setMetaData(response.metadata));
             return response.items;
         }catch(error){

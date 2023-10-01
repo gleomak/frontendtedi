@@ -167,7 +167,7 @@ export default function ResidenceDetails() {
         formData.append("residenceId", residence.id.toString());
         await agent.Catalog.createResidenceReview(formData).then(()=>{
             toast.success("Review sent!")})
-            .catch(errors => console.log(errors));
+            .catch(errors => toast.error(errors.data));
         dispatch(setResidencesLoaded());
         navigate('/catalog');
         handleCreateResReviewClose(); // Close the dialog after replying

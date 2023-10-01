@@ -15,11 +15,15 @@ import {catalogSlice, setFromDate, setResidenceParams, setResidencesLoaded} from
 import {useAppDispatch, useAppSelector} from "../../store/configureStore";
 import TextField from "@mui/material/TextField";
 import {MenuItem} from "@mui/material";
-import {NavLink} from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
+import agent from "../../app/api/agent";
 
 const LocationSearch = () => {
     const { residenceParams } = useAppSelector(state => state.catalog);
     const [guests, setGuests] = useState(1); // Initial number of guests
+    const [neighborhood, setNeighborhood] = useState('');
+    const user = useAppSelector(state => state.account.user);
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const handleChange = (event : any) => {
         setGuests(event.target.value);
@@ -35,6 +39,21 @@ const LocationSearch = () => {
             );
         }
         return options;
+    };
+
+    const handleOnClick = async() =>{
+        if(user && neighborhood !== ''){
+            const data = new FormData();
+            data.append('neighborhood', neighborhood)
+            await agent.Account.postSearchedNeighborhood(data);
+        }
+        navigate('/catalog')
+    }
+
+    const handleNeighborhoodChange = (event : any) => {
+        const newValue = event.target.value;
+        setNeighborhood(newValue); // Update the local state
+        dispatch(setResidenceParams({ neighborhood: newValue })); // Dispatch the action to update Redux
     };
 
     return (
@@ -61,9 +80,8 @@ const LocationSearch = () => {
             <TextField id="standard-basic"
                        label="Neighborhood"
                        variant="standard"
-                       onChange={event=>dispatch(setResidenceParams({neighborhood : event.target.value}))}
+                       onChange={handleNeighborhoodChange}
             />
-
             <Divider orientation="vertical" flexItem />
 
             {/* Country */}
@@ -104,15 +122,14 @@ const LocationSearch = () => {
                 </Select>
             </FormControl>
             <Divider orientation="vertical" flexItem />
-            <NavLink to={'/catalog'} >
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<SearchIcon />}
-                >
-                    Search
-                </Button>
-            </NavLink>
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleOnClick}
+                startIcon={<SearchIcon />}
+            >
+                Search
+            </Button>
         </Paper>
     );
 };

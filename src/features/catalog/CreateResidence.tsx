@@ -19,6 +19,7 @@ import {Icon} from 'leaflet';
 import {useAppDispatch, useAppSelector} from "../../store/configureStore";
 import {residencesSelectors, setResidencesLoaded} from "./catalogSlice";
 import agent from "../../app/api/agent";
+import {toast} from "react-toastify";
 
 
 L.Icon.Default.mergeOptions({
@@ -65,6 +66,9 @@ export default function CreateResidence() {
 
 
     async function handleResidenceSubmit(data: FieldValues){
+        if(!user?.roleAuthorized){
+            return toast.error("Cannot create a residence, please wait for authorization!");
+        }
         const formData = new FormData();
         formData.append('title', data.title);
         formData.append('neighborhood', data.neighborhood);

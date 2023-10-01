@@ -32,9 +32,7 @@ export default function Login() {
         try {
             const returnData = await dispatch(signInUser(data));
             if(signInUser.fulfilled.match(returnData)){
-                console.log("in");
                 const user = returnData.payload as User;
-                console.log(returnData);
                 if (user.roles?.some(role => role === "Admin"))
                     navigate('/controlPanel');
                 else{

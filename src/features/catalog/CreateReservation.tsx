@@ -110,11 +110,6 @@ export default function CreateReservation() {
             month: '2-digit',
             day: '2-digit',
         });
-        formData.append('from', formatDateToYYYYMMDD(start).toString());
-        formData.append('to', formatDateToYYYYMMDD(end).toString());
-        formData.append('userId', user?.id.toString()!);
-        formData.append('residenceId', residence.id.toString());
-
         if (!user) {
             toast.error('You have to Sign In first!');
             return navigate('/login', { state: { from: location } });
@@ -122,6 +117,11 @@ export default function CreateReservation() {
             toast.error('Not authorized to create reservations!');
             return;
         }
+        formData.append('from', formatDateToYYYYMMDD(start).toString());
+        formData.append('to', formatDateToYYYYMMDD(end).toString());
+        formData.append('stayingMemberUsername', user?.username);
+        formData.append('residenceId', residence.id.toString());
+
         await dispatch(()=> agent.Catalog.postReservation(formData));
         navigate('/catalog');
     }

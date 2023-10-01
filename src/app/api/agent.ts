@@ -87,6 +87,7 @@ const Account ={
     postUserMessage:(values: any) => requests.post('Account/postMessage', values),
     postLandlordReview:(values: FormData) => requests.postForm('Account/postLandlordReview', values),
     deleteUserMessage:(id:number) => requests.delete(`/Account/deleteUserMessage/${id}`),
+    postSearchedNeighborhood:(values:any) => requests.post('/Account/postUserSearchedNeighborhoods',values),
 }
 
 const Catalog={
@@ -107,8 +108,7 @@ const Catalog={
     getResidenceReviewsXML:() => requests.get3('/ResidenceReviews/getDataXML'),
     getResidenceReviewsJSON:() => requests.get3('/ResidenceReviews/getDataJSON'),
     postViewedResidence:(values:any)=> requests.post('/ViewedResidences/postViewedResidence',values),
-
-
+    getRecommendationResidences:(params:URLSearchParams) => requests.get('/MatrixFactorization/getRecommendedResidences',params),
     createResidenceReview:(values: FormData) => requests.postForm('/Residence/createResidenceReview', values)
 }
 
