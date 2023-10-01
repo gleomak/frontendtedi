@@ -141,6 +141,10 @@ export const accountSlice = createSlice({
             state.messagesLoaded = false;
             state.messageParams = {...state.messageParams, ...action.payload};
         },
+        removeMessage:(state , action) =>{
+            messagesAdapter.removeOne(state, action.payload);
+            state.messagesLoaded = false;
+        }
     },
     extraReducers: (builder =>{
         builder.addCase(fetchMessagesAsync.pending, (state) => {

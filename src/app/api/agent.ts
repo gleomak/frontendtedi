@@ -65,6 +65,9 @@ function createFormData(item: any) {
 const requests = {
     get:(url:string, params?: URLSearchParams) => axios.get(url, {params}).then(responseBody),
     get2:(url:string, body: {}) => axios.get(url, body).then(responseBody),
+    get3: (url: string) => axios.get(url, {
+        responseType: 'blob', // Treat response as binary data
+    }),
     post:(url:string, body: {}) => axios.post(url, body).then(responseBody),
     put:(url:string, body: {}) => axios.put(url, body).then(responseBody),
     delete:(url:string) => axios.delete(url).then(responseBody),
@@ -82,8 +85,8 @@ const Account ={
     getUserResidences:(values: URLSearchParams) => requests.get('Account/getHostResidences', values),
     getUserMessages:(values: URLSearchParams) => requests.get('Account/getUserMessages', values),
     postUserMessage:(values: any) => requests.post('Account/postMessage', values),
-    postLandlordReview:(values: FormData) => requests.postForm('Account/postLandlordReview', values)
-
+    postLandlordReview:(values: FormData) => requests.postForm('Account/postLandlordReview', values),
+    deleteUserMessage:(id:number) => requests.delete(`/Account/deleteUserMessage/${id}`),
 }
 
 const Catalog={
@@ -95,8 +98,17 @@ const Catalog={
     createResidence:(values: FormData) => requests.postForm('/Residence/createResidence', values),
     getHostInfo:(params: URLSearchParams) => requests.get('Account/getHost', params),
     deleteResidence:(id: number) => requests.delete(`/Residence/${id}`),
-    getResidencesXML:() => requests.get('/Residence/getDataXML'),
-    getResidencesJSON:() => requests.get('/Residence/getDataJSON'),
+    getResidencesXML:() => requests.get3('/Residence/getDataXML'),
+    getResidencesJSON:() => requests.get3('/Residence/getDataJSON'),
+    getReservationsXML:() => requests.get3('/Reservation/getDataXML'),
+    getReservationsJSON:() => requests.get3('/Reservation/getDataJSON'),
+    getHostReviewsXML:() => requests.get3('/LandLordReviews/getDataXML'),
+    getHostReviewsJSON:() => requests.get3('/LandLordReviews/getDataJSON'),
+    getResidenceReviewsXML:() => requests.get3('/ResidenceReviews/getDataXML'),
+    getResidenceReviewsJSON:() => requests.get3('/ResidenceReviews/getDataJSON'),
+    postViewedResidence:(values:any)=> requests.post('/ViewedResidences/postViewedResidence',values),
+
+
     createResidenceReview:(values: FormData) => requests.postForm('/Residence/createResidenceReview', values)
 }
 

@@ -1,8 +1,10 @@
 import {Button, Card, CardActions, CardContent, CardMedia, Grid, Rating} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {ReservationFromTo, Residence, ResidenceReview} from "../../app/models/residence";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import * as React from "react";
+import agent from "../../app/api/agent";
+import {useAppSelector} from "../../store/configureStore";
 
 interface Prop{
     residence : Residence;
@@ -19,13 +21,28 @@ const getResReviewRatingAverage = (reviews: ResidenceReview[]): number =>{
     const averageStarRating = totalStarRating / reviews.length;
     return averageStarRating;
 }
+
+
+
 export default function ResidenceCard({residence}:Prop){
+    const user = useAppSelector(state => state.account.user);
+    const navigate = useNavigate();
+    const handleLearnMoreClick = async()=>{
+        if(user) {
+            const formData = new FormData();
+            formData.append('userId',user.id);
+            formData.append('residenceId', residence.id.toString());
+            await agent.Catalog.postViewedResidence(formData);
+        }
+        navigate(`/catalog/${residence.id}`);
+    }
+
     return (
         <Card style={{ border: "none", boxShadow: "none" }}>
             <CardMedia
                 sx={{ height: 140 }}
                 image={residence.imageURL[0]}
-                title="green iguana"
+                title="residence image"
             />
             <CardContent>
                 <Typography gutterBottom variant="h6" component="div">
@@ -45,12 +62,12 @@ export default function ResidenceCard({residence}:Prop){
                         <Rating name="no-value" value={getResReviewRatingAverage(residence.reviewss)} readOnly />
                     </Grid>
                     <Grid>
-                        <a> ( {residence.reviewss.length} )</a>
+                        ( {residence.reviewss.length} )
                     </Grid>
                 </Grid>
             </CardContent>
             <CardActions>
-                <Button component={Link} to={`/catalog/${residence.id}`} size="small">Learn More</Button>
+                <Button  color="primary" onClick={handleLearnMoreClick} size="small">Learn More</Button>
             </CardActions>
         </Card>
     );

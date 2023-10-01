@@ -29,7 +29,7 @@ export interface Host{
 }
 
 export interface Message{
-    id: string;
+    id: number;
     message: string;
     residenceTitle?: string;
     senderUsername: string;

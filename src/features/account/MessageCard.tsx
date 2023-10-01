@@ -10,6 +10,9 @@ import MessageIcon from "@mui/icons-material/Message";
 import React, {useState} from "react";
 import { toast } from "react-toastify";
 import agent from "../../app/api/agent";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import {fetchSpecificResidences} from "./accountSlice";
+import {useAppDispatch} from "../../store/configureStore";
 
 interface Prop{
     message : Message;
@@ -18,7 +21,7 @@ interface Prop{
 export default function MessageCard({message}:Prop) {
     const [open, setOpen] = useState(false); // State to control the dialog
     const [replyText, setReplyText] = useState('');
-
+    const dispatch = useAppDispatch();
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -43,12 +46,19 @@ export default function MessageCard({message}:Prop) {
         handleClose(); // Close the dialog after replying
     };
 
+    const  handleMessageDelete  = async() =>{
+        await agent.Account.deleteUserMessage(message.id).then(() => dispatch(fetchSpecificResidences()))
+    }
+
 
     return (
         <>
             <Paper elevation={3} style={{ padding: '16px', marginBottom: '16px', width: '400px' }}>
                 <IconButton component={Link} to="/messages" color="inherit" onClick={handleClickOpen}>
                     <ReplyIcon/>
+                </IconButton>
+                <IconButton color="error" onClick={handleMessageDelete}>
+                    <DeleteForeverIcon />
                 </IconButton>
                 <Grid container spacing={2}>
                     <Grid item>

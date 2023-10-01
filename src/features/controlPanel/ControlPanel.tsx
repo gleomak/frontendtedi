@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import AppPagination from "../../app/components/AppPagination";
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import axios from "axios";
+import {toast} from "react-toastify";
 
 export default function ControlPanel(){
     const [users, setUsers] = useState<User[]>([]);
@@ -26,26 +27,86 @@ export default function ControlPanel(){
         setSelectedFormat(event.target.value);
     };
 
-
-    const handleResidencesClick = async() =>{
+    const handleHostReviewsClick = async() =>{
         try {
-            // Make an Axios GET request to your backend endpoint
-            const response = await axios.get('/Residence/getDataJSON', {
-                responseType: 'blob', // Treat response as binary data
-            });
-
-            // Create a blob URL for the downloaded file
-            const blob = new Blob([response.data], { type: 'application/json' });
+            const response = (selectedFormat === 'XML') ? await agent.Catalog.getHostReviewsXML() : await agent.Catalog.getHostReviewsJSON();
+            const blob = (selectedFormat === 'XML') ? new Blob([response.data], { type: 'application/xml' }) : new Blob([response.data], { type: 'application/json' });
             const url = window.URL.createObjectURL(blob);
-
-            // Create a temporary <a> element to trigger the download
+            if(response.status === 204)
+                return toast.error("There are no Host reviews to download!");
+            console.log(response);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'Residences.json'; // Set the filename
+            a.download = (selectedFormat === 'XML') ? 'HostReviews.xml' : 'HostReviews.json'; // Set the filename
             document.body.appendChild(a);
             a.click();
 
-            // Clean up the blob and URL
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading XML file:', error);
+        }
+    }
+
+
+
+    const handleResidenceReviewsClick = async() =>{
+        try {
+
+            const response = (selectedFormat === 'XML') ? await agent.Catalog.getResidenceReviewsXML() : await agent.Catalog.getResidenceReviewsJSON();
+            const blob = (selectedFormat === 'XML') ? new Blob([response.data], { type: 'application/xml' }) : new Blob([response.data], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            if(response.status === 204)
+                return toast.error("There are no Residence Reviews to download!");
+            console.log(response);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = (selectedFormat === 'XML') ? 'ResidenceReviews.xml' : 'ResidenceReviews.json'; // Set the filename
+            document.body.appendChild(a);
+            a.click();
+
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading XML file:', error);
+        }
+    }
+
+
+    const handleReservationsClick = async() =>{
+        try {
+            const response = (selectedFormat === 'XML') ? await agent.Catalog.getReservationsXML() : await agent.Catalog.getReservationsJSON();
+            const blob = (selectedFormat === 'XML') ? new Blob([response.data], { type: 'application/xml' }) : new Blob([response.data], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            if(response.status === 204)
+                return toast.error("There are no reservations to download!");
+            console.log(response);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = (selectedFormat === 'XML') ? 'Reservations.xml' : 'Reservations.json'; // Set the filename
+            document.body.appendChild(a);
+            a.click();
+
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading XML file:', error);
+        }
+    }
+
+
+    const handleResidencesClick = async() =>{
+        try {
+
+            const response = (selectedFormat === 'XML') ? await agent.Catalog.getResidencesXML() : await agent.Catalog.getResidencesJSON();
+            const blob = (selectedFormat === 'XML') ? new Blob([response.data], { type: 'application/xml' }) : new Blob([response.data], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            if(response.status === 204)
+                return toast.error("There are no residences to download!");
+            console.log(response);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = (selectedFormat === 'XML') ? 'Residences.xml' : 'Residences.json'; // Set the filename
+            document.body.appendChild(a);
+            a.click();
+
             window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Error downloading XML file:', error);
@@ -103,17 +164,17 @@ export default function ControlPanel(){
                                     </Button>
                                 </Grid>
                                 <Grid item xs={2.5}>
-                                    <Button variant="contained" color="primary" fullWidth>
+                                    <Button variant="contained" color="primary" onClick={handleReservationsClick} fullWidth>
                                         Reservations
                                     </Button>
                                 </Grid>
                                 <Grid item xs={3}>
-                                    <Button variant="contained" color="primary" fullWidth>
+                                    <Button variant="contained" color="primary" onClick={handleResidenceReviewsClick} fullWidth>
                                         Residence Reviews
                                     </Button>
                                 </Grid>
                                 <Grid item xs={2}>
-                                    <Button variant="contained" color="primary" fullWidth>
+                                    <Button variant="contained" color="primary" onClick={handleHostReviewsClick} fullWidth>
                                         Host Reviews
                                     </Button>
                                 </Grid>
